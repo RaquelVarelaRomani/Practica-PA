@@ -15,5 +15,9 @@ public interface SessionDao extends CrudRepository<Session, Long> {
 
     //Sesiones futuras de una película concreta
     List<Session> findByMovieIdAndStartTimeAfterOrderByStartTimeAsc(Long movieId, LocalDateTime now);
+
+    //para la FUNC-1
+    //muestra horas por pelicula para ese dia
+    List<Session> findByMovieIdAndStartTimeBetweenOrderByStartTimeAsc(Long movieId, LocalDateTime start, LocalDateTime end);
 }
 
