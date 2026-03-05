@@ -17,48 +17,49 @@ import es.udc.paproject.backend.model.entities.UserDao;
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
-	
+
 	@Autowired
 	private PermissionChecker permissionChecker;
-	
+
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 	private UserDao userDao;
-	
+
 	@Override
 	public void signUp(User user) throws DuplicateInstanceException {
-		
+
 		if (userDao.existsByUserName(user.getUserName())) {
 			throw new DuplicateInstanceException("project.entities.user", user.getUserName());
 		}
-			
+
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		user.setRole(User.RoleType.USER);
-		
+		//por lo que dice el enuniado de los roles
+		user.setRole(User.RoleType.VIEWER);
+
 		userDao.save(user);
-		
+
 	}
 
 	@Override
 	@Transactional(readOnly=true)
 	public User login(String userName, String password) throws IncorrectLoginException {
-		
+
 		Optional<User> user = userDao.findByUserName(userName);
-		
+
 		if (!user.isPresent()) {
 			throw new IncorrectLoginException(userName, password);
 		}
-		
+
 		if (!passwordEncoder.matches(password, user.get().getPassword())) {
 			throw new IncorrectLoginException(userName, password);
 		}
-		
+
 		return user.get();
-		
+
 	}
-	
+
 	@Override
 	@Transactional(readOnly=true)
 	public User loginFromId(Long id) throws InstanceNotFoundException {
@@ -67,29 +68,29 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User updateProfile(Long id, String firstName, String lastName, String email) throws InstanceNotFoundException {
-		
+
 		User user = permissionChecker.checkUser(id);
-		
+
 		user.setFirstName(firstName);
 		user.setLastName(lastName);
 		user.setEmail(email);
-		
+
 		return user;
 
 	}
 
 	@Override
 	public void changePassword(Long id, String oldPassword, String newPassword)
-		throws InstanceNotFoundException, IncorrectPasswordException {
-		
+			throws InstanceNotFoundException, IncorrectPasswordException {
+
 		User user = permissionChecker.checkUser(id);
-		
+
 		if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
 			throw new IncorrectPasswordException();
 		} else {
 			user.setPassword(passwordEncoder.encode(newPassword));
 		}
-		
+
 	}
 
 }
