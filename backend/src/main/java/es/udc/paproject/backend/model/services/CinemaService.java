@@ -1,0 +1,10 @@
+package es.udc.paproject.backend.model.services;
+
+import java.time.LocalDate;
+import es.udc.paproject.backend.model.entities.Movie;
+import es.udc.paproject.backend.model.exceptions.InstanceNotFoundException;
+
+public interface CinemaService {
+    //FUNC-1 Recuperar películas de cartelera para x día
+    Block<Movie> findMovies(LocalDate date);
+}
