@@ -31,10 +31,12 @@ public class Session {
     public void setId(Long id) { this.id = id;}
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "movieId")
     public Movie getMovie() {return movie;}
     public void setMovie(Movie movie) {this.movie = movie;}
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "roomId")
     public Room getRoom() {return room;}
     public void setRoom(Room room) {this.room = room;}
 
