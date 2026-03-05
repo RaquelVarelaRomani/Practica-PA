@@ -59,6 +59,7 @@ public class Purchase {
     }
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "userId")
     public User getUser() {
         return user;
     }
@@ -67,6 +68,7 @@ public class Purchase {
     }
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "sessionId")
     public Session getSession() {
         return session;
     }
