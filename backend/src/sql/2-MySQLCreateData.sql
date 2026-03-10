@@ -1,10 +1,10 @@
 -- ----------------------------------------------------------------------------
 -- Put here INSERT statements for inserting data required by the application
 -- in the "paproject" database.
--------------------------------------------------------------------------------
+-- -----------------------------------------------------------------------------
 INSERT INTO Room (name, capacity) VALUES ('Sala 1', 100);
 
---FUNC-1
+-- FUNC-1
 INSERT INTO Movie (title, summary, durationMinutes)
 VALUES ('Dune', 'Paul Atreides viaja al planeta más peligroso del universo.', 155);
 INSERT INTO Movie (title, summary, durationMinutes)
