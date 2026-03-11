@@ -3,7 +3,6 @@ package es.udc.paproject.backend.rest.controllers;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +24,9 @@ import es.udc.paproject.backend.rest.dtos.MovieSummaryDto;
 import org.springframework.web.bind.annotation.PathVariable;
 import es.udc.paproject.backend.rest.dtos.MovieDto;
 import es.udc.paproject.backend.model.exceptions.InstanceNotFoundException;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 @RestController
 @RequestMapping("/cinema")
 public class CinemaController {
@@ -36,15 +38,11 @@ public class CinemaController {
     private SessionDao sessionDao;
 
     @GetMapping("/movies")
-    public List<MovieSummaryDto> findMovies(@RequestParam(required = false) String date) {
-
-        //1)determinar fecha (hoy si es lo de por defecto)
-        LocalDate localDate;
-        if (date != null) {
-            localDate = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
-        } else {
-            localDate = LocalDate.now();
-        }
+    public List<MovieSummaryDto> findMovies
+            (@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+//Cambie el formato a como dijeron en el enunciado de semana 4-5
+        //1)determinar fecha si date es null usamos hoy
+        LocalDate localDate = (date != null) ? date : LocalDate.now();
 
         //2)llamar al service para obtener las peliculas de ese dia
         Block<Movie> movieBlock = cinemaService.findMovies(localDate);
