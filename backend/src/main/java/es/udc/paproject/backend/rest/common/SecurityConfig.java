@@ -35,8 +35,9 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.POST, "/users/login").permitAll()
 						.requestMatchers(HttpMethod.POST, "/users/loginFromServiceToken").permitAll()
 						//FUNC-1 acceso a la cartelera
-						.requestMatchers(HttpMethod.GET, "/cinema/movies").permitAll()
-
+						//.requestMatchers(HttpMethod.GET, "/cinema/movies").permitAll()
+						//FUNC-2 edito el de arriba porque ademas de ver la cartelera tenemos que poder ver cada peli
+						.requestMatchers(HttpMethod.GET, "/cinema/movies", "/cinema/movies/*").permitAll()
 						//lo modifique porque el enunciado decia lo de los roles
 						.requestMatchers(HttpMethod.PUT, "/users/*").hasAnyRole("VIEWER", "SELLER")
 						.requestMatchers(HttpMethod.POST, "/users/*/changePassword").hasAnyRole("VIEWER", "SELLER")
