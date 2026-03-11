@@ -21,6 +21,10 @@ import es.udc.paproject.backend.model.services.CinemaService;
 import es.udc.paproject.backend.rest.dtos.CinemaConversor;
 import es.udc.paproject.backend.rest.dtos.MovieSummaryDto;
 
+
+import org.springframework.web.bind.annotation.PathVariable;
+import es.udc.paproject.backend.rest.dtos.MovieDto;
+import es.udc.paproject.backend.model.exceptions.InstanceNotFoundException;
 @RestController
 @RequestMapping("/cinema")
 public class CinemaController {
@@ -61,5 +65,14 @@ public class CinemaController {
 
             return CinemaConversor.toMovieSummaryDto(movie, sessions);
         }).collect(Collectors.toList());
+    }
+
+    @GetMapping("/movies/{id}")
+    public MovieDto findMovie(@PathVariable Long id) throws InstanceNotFoundException {
+        // 1) Llamamos al servicio
+        Movie movie = cinemaService.findMovie(id);
+
+        // 2) Convertimos a DTO y devolvemos
+        return CinemaConversor.toMovieDto(movie);
     }
 }
