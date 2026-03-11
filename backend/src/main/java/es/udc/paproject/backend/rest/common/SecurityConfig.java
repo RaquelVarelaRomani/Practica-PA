@@ -39,8 +39,8 @@ public class SecurityConfig {
 						//FUNC-2 edito el de arriba porque ademas de ver la cartelera tenemos que poder ver cada peli
 						.requestMatchers(HttpMethod.GET, "/cinema/movies", "/cinema/movies/*").permitAll()
 						//lo modifique porque el enunciado decia lo de los roles
-						.requestMatchers(HttpMethod.PUT, "/users/*").hasAnyRole("VIEWER", "SELLER")
-						.requestMatchers(HttpMethod.POST, "/users/*/changePassword").hasAnyRole("VIEWER", "SELLER")
+						.requestMatchers(HttpMethod.PUT, "/users/*").hasAnyRole("VIEWER", "TICKET_SELLER")
+						.requestMatchers(HttpMethod.POST, "/users/*/changePassword").hasAnyRole("VIEWER", "TICKET_SELLER")
 						//codigo antes de modificarlo por si acaso:
 						//.requestMatchers(HttpMethod.PUT, "/users/*").hasRole("USER")
 						//.requestMatchers(HttpMethod.POST, "/users/*/changePassword").hasRole("USER")
