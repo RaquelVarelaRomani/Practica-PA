@@ -1,8 +1,5 @@
 package es.udc.paproject.backend.test.model.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,11 +19,16 @@ import es.udc.paproject.backend.model.entities.Session;
 import es.udc.paproject.backend.model.entities.SessionDao;
 import es.udc.paproject.backend.model.services.Block;
 import es.udc.paproject.backend.model.services.CinemaService;
+import es.udc.paproject.backend.model.exceptions.InstanceNotFoundException;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest //cargar el contexto de la app para poder hacer pruebas integracion
 @ActiveProfiles("test") //indica que use la config de bd test
 @Transactional //IMPORTANTEEEE despues de cada test hace rollback para que la bd quede limpia para el siguiente
 public class CinemaServiceTest {
+
+    private final Long NON_EXISTENT_ID = Long.valueOf(-1);
 
     @Autowired
     private CinemaService cinemaService;
@@ -39,6 +41,7 @@ public class CinemaServiceTest {
 
     @Autowired
     private SessionDao sessionDao;
+
 
     //METODOS AUX
 
@@ -130,5 +133,26 @@ public class CinemaServiceTest {
 
         //3) VERIFICACION: que la lista este vacia
         assertTrue(movieBlock.getItems().isEmpty());
+    }
+
+    // TESTS FUNC-2
+
+    @Test
+    public void testFindMovie() throws InstanceNotFoundException {
+        //1) ESCENARIO: buscar una peli existente
+        Movie movie = createMovie("Dune");
+
+        //2) ACCION: buscar la peli
+        Movie foundMovie = cinemaService.findMovie(movie.getId());
+
+        //3) VERIFICACION: que la peli que encuentra sea Dune
+        assertEquals(movie, foundMovie);
+        assertEquals("Dune", foundMovie.getTitle());
+    }
+
+    @Test
+    public void testFindNonExistentIdMovie() {
+        //1) ESCENARIO: buscar un id que no existe
+        assertThrows(InstanceNotFoundException.class, () -> cinemaService.findMovie(NON_EXISTENT_ID));
     }
 }
