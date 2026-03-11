@@ -24,4 +24,9 @@ public class CinemaConversor {
         return new MovieSummaryDto(movie.getId(), movie.getTitle(), sessionDtos);
     }
 
+    //FUNC-2: convertir movie en moviedto
+    public static MovieDto toMovieDto(Movie movie) {
+        return new MovieDto(movie.getId(), movie.getTitle(), movie.getSummary(), movie.getDurationMinutes());
+    }
+
 }
