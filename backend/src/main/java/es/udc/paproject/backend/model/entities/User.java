@@ -7,7 +7,7 @@ import java.util.List;
 @Entity
 public class User {
 	
-	public enum RoleType {VIEWER, SELLER};
+	public enum RoleType {VIEWER, TICKET_SELLER};
 
 	private Long id;
 	private String userName;
