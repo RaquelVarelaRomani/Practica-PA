@@ -26,6 +26,7 @@ public class CinemaServiceImpl implements CinemaService {
     @Autowired
     private SessionDao sessionDao;
 
+    //para func 1 ver las pelis que hay en cartelera
     @Override
     public Block<Movie> findMovies(LocalDate date) {
 
@@ -45,5 +46,21 @@ public class CinemaServiceImpl implements CinemaService {
         //4)devolvemos Block con películas
         return new Block<>(movies, false);
     }
+
+    //para func 2 encontrar la peli y ver su info
+    @Override
+    public Movie findMovie(Long movieId) throws InstanceNotFoundException {
+        //buscamos la peli por el id
+        Optional<Movie> movie = movieDao.findById(movieId);
+
+        //si no existe InstanceNotFoundException
+        if (!movie.isPresent()) {
+            throw new InstanceNotFoundException("project.entities.movie", movieId);
+        }
+
+        //si llega hasta aqui es porque existe y devolvemos un tipo Movie
+        return movie.get();
+    }
+
 
 }
