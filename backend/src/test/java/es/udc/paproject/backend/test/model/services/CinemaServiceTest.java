@@ -17,8 +17,13 @@ import es.udc.paproject.backend.model.entities.Room;
 import es.udc.paproject.backend.model.entities.RoomDao;
 import es.udc.paproject.backend.model.entities.Session;
 import es.udc.paproject.backend.model.entities.SessionDao;
+import es.udc.paproject.backend.model.entities.User;
+import es.udc.paproject.backend.model.entities.UserDao;
+import es.udc.paproject.backend.model.entities.Purchase;
+import es.udc.paproject.backend.model.entities.PurchaseDao;
 import es.udc.paproject.backend.model.services.Block;
 import es.udc.paproject.backend.model.services.CinemaService;
+import es.udc.paproject.backend.model.services.SessionDetails;
 import es.udc.paproject.backend.model.exceptions.InstanceNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,6 +47,12 @@ public class CinemaServiceTest {
     @Autowired
     private SessionDao sessionDao;
 
+    @Autowired
+    private UserDao userDao;
+
+    @Autowired
+    private PurchaseDao purchaseDao;
+
 
     //METODOS AUX
 
@@ -63,6 +74,18 @@ public class CinemaServiceTest {
         //constructor sesion pide (pelicula, sala, hora inicio, precio)
         return sessionDao.save(new Session(movie, room, startTime, new BigDecimal("8.50")));
     }
+
+    //Crea usuario
+    private User createUser(String userName) {
+        User user = new User(userName, "password", "firstName", "lastName", userName + "@gmail.com", User.RoleType.VIEWER);
+        return userDao.save(user);
+    }
+
+    //Crea un compra de un usuario
+    private Purchase createPurchase(User user, Session session, int numberTickets, String creditCardNumber) {
+        return purchaseDao.save(new Purchase(LocalDateTime.now(), numberTickets, creditCardNumber, user, session));
+    }
+
 
     // TESTS FUNC-1
 
@@ -155,4 +178,64 @@ public class CinemaServiceTest {
         //1) ESCENARIO: buscar un id que no existe
         assertThrows(InstanceNotFoundException.class, () -> cinemaService.findMovie(NON_EXISTENT_ID));
     }
+
+
+    //TESTS FUNC-3
+    @Test
+    public void testFindSessionWithoutPurchases() throws InstanceNotFoundException {
+        //Sesión sin compras
+        Movie movie = createMovie("Interstellar");
+        Room room = createRoom("Sala 2");
+        Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
+
+        //Buscamos el detalle de la sesion
+        SessionDetails sessionDetails = cinemaService.findSession(session.getId());
+
+        assertEquals(session.getId(), sessionDetails.getSession().getId());
+        assertEquals(100, sessionDetails.getAvailableTickets());
+    }
+
+    @Test
+    public void testFindSessionWithPurchases() throws InstanceNotFoundException {
+        //Sesión con compras ya realizadas
+        Movie movie = createMovie("Blade Runner");
+        Room room = createRoom("Sala 3");
+        Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
+
+        User user1 = createUser("user1");
+        User user2 = createUser("user2");
+
+        createPurchase(user1, session, 5, "1111222233334444");
+        createPurchase(user2, session, 7, "5555666677778888");
+
+        //Buscamos el detalle de la sesión
+        SessionDetails sessionDetails = cinemaService.findSession(session.getId());
+
+        //100 - (5 + 7) = 88 disponibles
+        assertEquals(session.getId(), sessionDetails.getSession().getId());
+        assertEquals(88, sessionDetails.getAvailableTickets());
+    }
+
+    @Test
+    public void testFindSessionWithNoAvailableTickets() throws InstanceNotFoundException {
+        //Sesión sin butacas disponibles
+        Movie movie = createMovie("Harry Potter");
+        Room room = createRoom("Sala 4");
+        Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
+
+        User user = createUser("user3");
+        createPurchase(user, session, 100, "9999888877776666");
+
+        SessionDetails sessionDetails = cinemaService.findSession(session.getId());
+
+        assertEquals(0, sessionDetails.getAvailableTickets());
+    }
+
+    @Test
+    public void testFindNonExistentSession() {
+        //Buscamos una sesión que no existe
+        assertThrows(InstanceNotFoundException.class,
+                () -> cinemaService.findSession(NON_EXISTENT_ID));
+    }
+
 }
