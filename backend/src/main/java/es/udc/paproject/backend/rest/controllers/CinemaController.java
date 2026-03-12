@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import es.udc.paproject.backend.model.entities.Movie;
 import es.udc.paproject.backend.model.entities.Session;
 import es.udc.paproject.backend.model.entities.SessionDao;
+import es.udc.paproject.backend.model.services.SessionDetails;
 import es.udc.paproject.backend.model.services.Block;
 import es.udc.paproject.backend.model.services.CinemaService;
 import es.udc.paproject.backend.rest.dtos.CinemaConversor;
 import es.udc.paproject.backend.rest.dtos.MovieSummaryDto;
+import es.udc.paproject.backend.rest.dtos.SessionDto;
 
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -73,4 +75,11 @@ public class CinemaController {
         // 2) Convertimos a DTO y devolvemos
         return CinemaConversor.toMovieDto(movie);
     }
+
+    @GetMapping("/sessions/{id}")
+    public SessionDto findSession(@PathVariable Long id) throws InstanceNotFoundException {
+        SessionDetails sessionDetails = cinemaService.findSession(id);
+        return CinemaConversor.toSessionDto(sessionDetails);
+    }
+
 }
