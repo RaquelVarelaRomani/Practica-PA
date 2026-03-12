@@ -6,14 +6,11 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+import es.udc.paproject.backend.model.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.udc.paproject.backend.model.entities.Movie;
-import es.udc.paproject.backend.model.entities.MovieDao;
-import es.udc.paproject.backend.model.entities.Session;
-import es.udc.paproject.backend.model.entities.SessionDao;
 import es.udc.paproject.backend.model.exceptions.InstanceNotFoundException;
 
 @Service
@@ -25,6 +22,9 @@ public class CinemaServiceImpl implements CinemaService {
 
     @Autowired
     private SessionDao sessionDao;
+
+    @Autowired
+    private PurchaseDao purchaseDao;
 
     //para func 1 ver las pelis que hay en cartelera
     @Override
@@ -62,5 +62,27 @@ public class CinemaServiceImpl implements CinemaService {
         return movie.get();
     }
 
+    //para FUNC-3 encontrar la sesión y ver su info
+    @Override
+    public SessionDetails findSession (Long sessionId) throws InstanceNotFoundException {
+        //Buscamos la sesión por el id
+        Optional<Session> optionalSession = sessionDao.findById(sessionId);
+
+        //si no existe InstanceNotFoundException
+        if(!optionalSession.isPresent()) {
+            throw new InstanceNotFoundException("project.entities.session", sessionId);
+        }
+
+        //Recuperamos las compras de la sesión
+        Session session = optionalSession.get();
+        List<Purchase> purchases = purchaseDao.findBySessionId(sessionId);
+
+        //Sumamos cuantas entradas se vendieron
+        int soldTickets = purchases.stream().mapToInt(Purchase::getNumberTickets).sum();
+        //Calculamos cuantas quedan
+        int availableTickets = session.getRoom().getCapacity() - soldTickets;
+        //Devolvemos los datos juntos
+        return new SessionDetails(session, availableTickets);
+    }
 
 }

@@ -9,4 +9,7 @@ public interface CinemaService {
     Block<Movie> findMovies(LocalDate date);
     //FUNC-2 Recuperar información detallada de una película
     Movie findMovie(Long movieId) throws InstanceNotFoundException;
+
+    //FUNC-3 Recuperar información detallada de una sesión
+    SessionDetails findSession(Long sessionId) throws InstanceNotFoundException;
 }
