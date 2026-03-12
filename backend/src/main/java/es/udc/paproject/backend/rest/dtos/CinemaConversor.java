@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import es.udc.paproject.backend.model.entities.Movie;
 import es.udc.paproject.backend.model.entities.Session;
+import es.udc.paproject.backend.model.services.SessionDetails;
 
 public class CinemaConversor {
 
@@ -27,6 +28,21 @@ public class CinemaConversor {
     //FUNC-2: convertir movie en moviedto
     public static MovieDto toMovieDto(Movie movie) {
         return new MovieDto(movie.getId(), movie.getTitle(), movie.getSummary(), movie.getDurationMinutes());
+    }
+
+    //FUNC-3: convertir session en sessionDto
+    public static SessionDto toSessionDto(SessionDetails sessionDetails) {
+        Session session = sessionDetails.getSession();
+        return new SessionDto(
+                session.getId(),
+                session.getMovie().getId(),
+                session.getMovie().getTitle(),
+                session.getMovie().getDurationMinutes(),
+                session.getPrice(),
+                session.getStartTime(),
+                session.getRoom().getId(),
+                session.getRoom().getName(),
+                sessionDetails.getAvailableTickets());
     }
 
 }
