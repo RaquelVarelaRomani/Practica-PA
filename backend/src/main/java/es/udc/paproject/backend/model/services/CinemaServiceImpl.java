@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.udc.paproject.backend.model.exceptions.InstanceNotFoundException;
+import es.udc.paproject.backend.model.exceptions.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,6 +25,9 @@ public class CinemaServiceImpl implements CinemaService {
 
     @Autowired
     private PurchaseDao purchaseDao;
+
+    @Autowired
+    private PermissionChecker permissionChecker;
 
     //para func 1 ver las pelis que hay en cartelera
     @Override
@@ -83,6 +86,42 @@ public class CinemaServiceImpl implements CinemaService {
         int availableTickets = session.getRoom().getCapacity() - soldTickets;
         //Devolvemos los datos juntos
         return new SessionDetails(session, availableTickets);
+    }
+
+    //para FUNC-4 realizar una compra
+    @Override
+    @Transactional
+    public Purchase buyTickets (Long userId, Long sessionId, Integer numberTickets, String creditCardNumber) throws InstanceNotFoundException, PermissionException, SessionAlreadyStartedException, NotEnoughTicketsException {
+
+        User user = permissionChecker.checkUser(userId);
+        //Si no es un cliente del cine no puede comprar
+        if (user.getRole() != User.RoleType.VIEWER) {
+            throw new PermissionException();
+        }
+
+        Optional<Session> optionalSession = sessionDao.findById(sessionId);
+        if (!optionalSession.isPresent()) {
+            throw new InstanceNotFoundException("project.entities.session", sessionId);
+        }
+
+        Session session = optionalSession.get();
+        if (!session.getStartTime().isAfter(LocalDateTime.now())) {
+            throw new SessionAlreadyStartedException("The session has already been started");
+        }
+
+        //Recuperamos las compras de la sesión
+        List<Purchase> purchases = purchaseDao.findBySessionId(sessionId);
+        //Calculamos las butacas disponibles
+        int soldTickets = purchases.stream().mapToInt(Purchase::getNumberTickets).sum();
+        int availableTickets = session.getRoom().getCapacity() - soldTickets;
+
+        //Si se intentan comprar más entradas de las que hay
+        if (availableTickets < numberTickets) {
+            throw new NotEnoughTicketsException("There aren't enough tickets available ");
+        }
+
+        Purchase purchase = new Purchase(LocalDateTime.now(), numberTickets, creditCardNumber, user, session);
+        return purchaseDao.save(purchase);
     }
 
 }
