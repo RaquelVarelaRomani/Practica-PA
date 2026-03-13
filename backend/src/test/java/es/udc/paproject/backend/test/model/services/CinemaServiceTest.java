@@ -24,7 +24,7 @@ import es.udc.paproject.backend.model.entities.PurchaseDao;
 import es.udc.paproject.backend.model.services.Block;
 import es.udc.paproject.backend.model.services.CinemaService;
 import es.udc.paproject.backend.model.services.SessionDetails;
-import es.udc.paproject.backend.model.exceptions.InstanceNotFoundException;
+import es.udc.paproject.backend.model.exceptions.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -81,11 +81,16 @@ public class CinemaServiceTest {
         return userDao.save(user);
     }
 
+    //Crea un vendedor de tickets
+    private User createTicketSeller(String userName){
+        User user = new User(userName, "password", "firstName", "lastName", userName + "@gmail.com", User.RoleType.TICKET_SELLER);
+        return userDao.save(user);
+    }
+
     //Crea un compra de un usuario
     private Purchase createPurchase(User user, Session session, int numberTickets, String creditCardNumber) {
         return purchaseDao.save(new Purchase(LocalDateTime.now(), numberTickets, creditCardNumber, user, session));
     }
-
 
     // TESTS FUNC-1
 
@@ -131,12 +136,21 @@ public class CinemaServiceTest {
         Movie movieFuture = createMovie("Peli nueva");
         Room room = createRoom("Sala 1");
 
+        LocalDate today = LocalDate.now();
         LocalDateTime now = LocalDateTime.now();
 
-        //sesion de hace 2 horas que no debe aparecer en la cartelera
-        createSession(moviePast, room, now.minusHours(2));
-        //sesion de dentro de 3 que si debe aparecer
-        createSession(movieFuture, room, now.plusHours(3));
+        //La sesión pasada no debe aparecer
+        LocalDateTime pastSessionTime = now.minusHours(2);
+
+        //La futura debería aparecer
+        //Ponemos la futura dentro del mismo día para que el test no dependa de la hora actual
+        LocalDateTime futureSessionTime = today.atTime(23, 0);
+        if (!futureSessionTime.isAfter(now)) {
+            futureSessionTime = now.plusMinutes(30);
+        }
+
+        createSession(moviePast, room, pastSessionTime);
+        createSession(movieFuture, room, futureSessionTime);
 
         //2) ACCION: buscar las pelis para hoy
         Block<Movie> movieBlock = cinemaService.findMovies(now.toLocalDate());
@@ -236,6 +250,86 @@ public class CinemaServiceTest {
         //Buscamos una sesión que no existe
         assertThrows(InstanceNotFoundException.class,
                 () -> cinemaService.findSession(NON_EXISTENT_ID));
+    }
+
+    //TESTS FUNC-4
+    @Test
+    public void testBuyTickets() throws Exception {
+        //Compra correcta
+        User user = createUser("viewer1");
+        Movie movie = createMovie("Matrix");
+        Room room = createRoom("Sala 5");
+        Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
+
+        Purchase purchase = cinemaService.buyTickets(user.getId(), session.getId(), 3, "1234567890123456");
+
+        assertNotNull(purchase.getId());
+        assertEquals(user.getId(), purchase.getUser().getId());
+        assertEquals(session.getId(), purchase.getSession().getId());
+        assertEquals(3, purchase.getNumberTickets());
+        assertEquals("1234567890123456", purchase.getCreditCardNumber());
+        assertFalse(purchase.isDelivered());
+
+        SessionDetails sessionDetails = cinemaService.findSession(session.getId());
+        assertEquals(97, sessionDetails.getAvailableTickets());
+    }
+
+    @Test
+    public void testBuyTicketsNonExistentUser() {
+        //Compra de un usuario que no existe
+        Movie movie = createMovie("Los juegos del hambre");
+        Room room = createRoom("Sala 6");
+        Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
+
+        assertThrows(InstanceNotFoundException.class,
+                () -> cinemaService.buyTickets(NON_EXISTENT_ID, session.getId(), 2, "1234567890123456"));
+    }
+
+    @Test
+    public void testBuyTicketsNonExistentSession() {
+        //Intento de compra en una sesión que no existe
+        User user = createUser("viewer2");
+
+        assertThrows(InstanceNotFoundException.class,
+                () -> cinemaService.buyTickets(user.getId(), NON_EXISTENT_ID, 2, "1234567890123456"));
+    }
+
+    @Test
+    public void testBuyTicketsWhenSessionAlreadyStarted() {
+        //Intento de compra en una sesión ya empezada
+        User user = createUser("viewer3");
+        Movie movie = createMovie("Divergente");
+        Room room = createRoom("Sala 7");
+        Session session = createSession(movie, room, LocalDateTime.now().minusMinutes(5));
+
+        assertThrows(SessionAlreadyStartedException.class,
+                () -> cinemaService.buyTickets(user.getId(), session.getId(), 2, "1234567890123456"));
+    }
+
+    @Test
+    public void testBuyTicketsWhenThereAreNotEnoughTickets() {
+        //No hay suficientes entradas
+        User user = createUser("viewer4");
+        Movie movie = createMovie("Avatar");
+        Room room = createRoom("Sala 8");
+        Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
+
+        createPurchase(user, session, 99, "9999888877776666");
+
+        assertThrows(NotEnoughTicketsException.class,
+                () -> cinemaService.buyTickets(user.getId(), session.getId(), 2, "1234567890123456"));
+    }
+
+    @Test
+    public void testBuyTicketsTicketSellerCannotBuy() {
+        //Vendedor no puede comprar entradas
+        User ticketSeller = createTicketSeller("seller1");
+        Movie movie = createMovie("Expediente Warren");
+        Room room = createRoom("Sala 9");
+        Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
+
+        assertThrows(PermissionException.class,
+                () -> cinemaService.buyTickets(ticketSeller.getId(), session.getId(), 1, "1234567890123456"));
     }
 
 }
