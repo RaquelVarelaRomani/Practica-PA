@@ -11,7 +11,7 @@ CREATE TABLE User (
                       firstName VARCHAR(60) NOT NULL,
                       lastName VARCHAR(60) NOT NULL,
                       email VARCHAR(60) NOT NULL,
-                      role VARCHAR(10) NOT NULL,
+                      role VARCHAR(20) NOT NULL,
                       CONSTRAINT UserPK PRIMARY KEY (id),
                       CONSTRAINT UserNameUniqueKey UNIQUE (userName)
 ) ENGINE = InnoDB;
