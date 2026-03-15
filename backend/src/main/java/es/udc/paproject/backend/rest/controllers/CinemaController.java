@@ -6,28 +6,26 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import es.udc.paproject.backend.model.exceptions.NotEnoughTicketsException;
+import es.udc.paproject.backend.model.exceptions.PermissionException;
+import es.udc.paproject.backend.model.exceptions.SessionAlreadyStartedException;
+import es.udc.paproject.backend.rest.dtos.*;
+import es.udc.paproject.backend.model.exceptions.InstanceNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
 
 import es.udc.paproject.backend.model.entities.Movie;
 import es.udc.paproject.backend.model.entities.Session;
 import es.udc.paproject.backend.model.entities.SessionDao;
+import es.udc.paproject.backend.model.entities.Purchase;
 import es.udc.paproject.backend.model.services.SessionDetails;
 import es.udc.paproject.backend.model.services.Block;
 import es.udc.paproject.backend.model.services.CinemaService;
-import es.udc.paproject.backend.rest.dtos.CinemaConversor;
-import es.udc.paproject.backend.rest.dtos.MovieSummaryDto;
-import es.udc.paproject.backend.rest.dtos.SessionDto;
-
-
-import org.springframework.web.bind.annotation.PathVariable;
-import es.udc.paproject.backend.rest.dtos.MovieDto;
-import es.udc.paproject.backend.model.exceptions.InstanceNotFoundException;
-
-import org.springframework.format.annotation.DateTimeFormat;
 
 @RestController
 @RequestMapping("/cinema")
@@ -80,6 +78,12 @@ public class CinemaController {
     public SessionDto findSession(@PathVariable Long id) throws InstanceNotFoundException {
         SessionDetails sessionDetails = cinemaService.findSession(id);
         return CinemaConversor.toSessionDto(sessionDetails);
+    }
+
+    @PostMapping("/buy")
+    public PurchaseDto buyTickets(@RequestAttribute Long userId, @Validated @RequestBody TicketParamsDto params) throws InstanceNotFoundException, PermissionException, SessionAlreadyStartedException, NotEnoughTicketsException {
+        Purchase purchase = cinemaService.buyTickets(userId, params.getSessionId(), params.getNumberTickets(), params.getCreditCardNumber());
+        return CinemaConversor.toPurchaseDto(purchase);
     }
 
 }
