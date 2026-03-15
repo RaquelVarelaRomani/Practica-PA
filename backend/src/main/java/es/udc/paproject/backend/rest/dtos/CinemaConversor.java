@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import es.udc.paproject.backend.model.entities.Movie;
+import es.udc.paproject.backend.model.entities.Purchase;
 import es.udc.paproject.backend.model.entities.Session;
 import es.udc.paproject.backend.model.services.SessionDetails;
 
@@ -43,6 +44,19 @@ public class CinemaConversor {
                 session.getRoom().getId(),
                 session.getRoom().getName(),
                 sessionDetails.getAvailableTickets());
+    }
+
+    //FUNC-4: convertir purchase en purchaseDto
+    public static PurchaseDto toPurchaseDto(Purchase purchase) {
+        return new PurchaseDto(
+                purchase.getId(),
+                purchase.getPurchaseDate(),
+                purchase.getNumberTickets(),
+                purchase.getCreditCardNumber(),
+                purchase.getUser().getId(),
+                purchase.getSession().getId(),
+                purchase.isDelivered()
+        );
     }
 
 }
