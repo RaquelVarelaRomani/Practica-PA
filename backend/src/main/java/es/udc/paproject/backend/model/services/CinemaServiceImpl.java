@@ -106,7 +106,7 @@ public class CinemaServiceImpl implements CinemaService {
 
         Session session = optionalSession.get();
         if (!session.getStartTime().isAfter(LocalDateTime.now())) {
-            throw new SessionAlreadyStartedException("The session has already been started");
+            throw new SessionAlreadyStartedException();
         }
 
         //Recuperamos las compras de la sesión
@@ -117,7 +117,7 @@ public class CinemaServiceImpl implements CinemaService {
 
         //Si se intentan comprar más entradas de las que hay
         if (availableTickets < numberTickets) {
-            throw new NotEnoughTicketsException("There aren't enough tickets available ");
+            throw new NotEnoughTicketsException();
         }
 
         Purchase purchase = new Purchase(LocalDateTime.now(), numberTickets, creditCardNumber, user, session);

@@ -15,7 +15,7 @@ public class Purchase {
     private Session session;
     private boolean delivered;
 
-    public Purchase(){};
+    public Purchase() {}
     public Purchase(LocalDateTime purchaseDate, Integer numberTickets, String creditCardNumber, User user, Session session) {
         this.purchaseDate = purchaseDate;
         this.numberTickets = numberTickets;

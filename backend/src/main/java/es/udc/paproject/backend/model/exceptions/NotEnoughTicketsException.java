@@ -1,7 +1,5 @@
 package es.udc.paproject.backend.model.exceptions;
 
+@SuppressWarnings("serial")
 public class NotEnoughTicketsException extends Exception {
-    public NotEnoughTicketsException(String message) {
-        super(message);
-    }
 }

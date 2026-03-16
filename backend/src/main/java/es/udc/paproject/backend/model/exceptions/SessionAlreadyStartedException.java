@@ -1,7 +1,5 @@
 package es.udc.paproject.backend.model.exceptions;
 
+@SuppressWarnings("serial")
 public class SessionAlreadyStartedException extends Exception {
-    public SessionAlreadyStartedException(String message) {
-        super(message);
-    }
 }

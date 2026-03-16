@@ -4,16 +4,8 @@ import jakarta.validation.constraints.*;
 
 public class TicketParamsDto {
 
-    @NotNull
     private Long sessionId;
-
-    @NotNull
-    @Min(1)
-    @Max(10)
     private Integer numberTickets;
-
-    @NotBlank
-    @Size(min = 16, max = 16)
     private String creditCardNumber;
 
     public TicketParamsDto(){}
@@ -24,6 +16,7 @@ public class TicketParamsDto {
         this.creditCardNumber = creditCardNumber;
     }
 
+    @NotNull
     public Long getSessionId() {
         return sessionId;
     }
@@ -32,6 +25,9 @@ public class TicketParamsDto {
         this.sessionId = sessionId;
     }
 
+    @NotNull
+    @Min(1)
+    @Max(10)
     public Integer getNumberTickets() {
         return numberTickets;
     }
@@ -40,6 +36,8 @@ public class TicketParamsDto {
         this.numberTickets = numberTickets;
     }
 
+    @NotBlank
+    @Size(min = 16, max = 16)
     public String getCreditCardNumber() {
         return creditCardNumber;
     }
