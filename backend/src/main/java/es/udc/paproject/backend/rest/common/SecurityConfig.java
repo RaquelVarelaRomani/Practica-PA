@@ -44,6 +44,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/cinema/buy").hasRole("VIEWER")
                         //FUNC-5 historico de compras
                         .requestMatchers(HttpMethod.GET, "/cinema/purchases").hasRole("VIEWER")
+                        //FUNC-6 entregar entradas
+                        .requestMatchers(HttpMethod.POST, "/cinema/purchases/*/deliver").hasRole("TICKET_SELLER")
 						.requestMatchers(HttpMethod.PUT, "/users/*").hasAnyRole("VIEWER", "TICKET_SELLER")
 						.requestMatchers(HttpMethod.POST, "/users/*/changePassword").hasAnyRole("VIEWER", "TICKET_SELLER")
 						.anyRequest().denyAll());

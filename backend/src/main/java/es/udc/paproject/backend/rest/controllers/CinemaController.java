@@ -5,16 +5,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import es.udc.paproject.backend.model.exceptions.NotEnoughTicketsException;
-import es.udc.paproject.backend.model.exceptions.PermissionException;
-import es.udc.paproject.backend.model.exceptions.SessionAlreadyStartedException;
+import es.udc.paproject.backend.model.exceptions.*;
 import es.udc.paproject.backend.rest.common.ErrorsDto;
 import es.udc.paproject.backend.rest.dtos.*;
-import es.udc.paproject.backend.model.exceptions.InstanceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +33,10 @@ public class CinemaController {
             "project.exceptions.SessionAlreadyStartedException";
     private final static String NOT_ENOUGH_TICKETS_EXCEPTION_CODE =
             "project.exceptions.NotEnoughTicketsException";
+    private final static String ALREADY_DELIVERED_EXCEPTION_CODE =
+            "project.exceptions.AlreadyDeliveredException";
+    private final static String CREDIT_CARD_DOES_NOT_MATCH_EXCEPTION_CODE =
+            "project.exceptions.CreditCardDoesNotMatchException";
 
     @Autowired
     private MessageSource messageSource;
@@ -61,6 +63,30 @@ public class CinemaController {
 
         String errorMessage = messageSource.getMessage(NOT_ENOUGH_TICKETS_EXCEPTION_CODE, null,
                 NOT_ENOUGH_TICKETS_EXCEPTION_CODE, locale);
+
+        return new ErrorsDto(errorMessage);
+
+    }
+
+    @ExceptionHandler(AlreadyDeliveredException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorsDto handleAlreadyDeliveredException(AlreadyDeliveredException exception, Locale locale) {
+
+        String errorMessage = messageSource.getMessage(ALREADY_DELIVERED_EXCEPTION_CODE, null,
+                ALREADY_DELIVERED_EXCEPTION_CODE, locale);
+
+        return new ErrorsDto(errorMessage);
+
+    }
+
+    @ExceptionHandler(CreditCardDoesNotMatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorsDto handleCreditCardDoesNotMatchException(CreditCardDoesNotMatchException exception, Locale locale) {
+
+        String errorMessage = messageSource.getMessage(CREDIT_CARD_DOES_NOT_MATCH_EXCEPTION_CODE, null,
+                CREDIT_CARD_DOES_NOT_MATCH_EXCEPTION_CODE, locale);
 
         return new ErrorsDto(errorMessage);
 
@@ -110,6 +136,18 @@ public class CinemaController {
 
         return new BlockDto<>(CinemaConversor.toPurchaseSummaryDtos(purchaseBlock.getItems()),
                 purchaseBlock.getExistMoreItems());
+    }
+
+    @PostMapping("/purchases/{purchaseId}/deliver")
+    public ResponseEntity<Void> deliverTickets(@RequestAttribute Long userId,
+                                               @PathVariable Long purchaseId,
+                                               @Validated @RequestBody DeliverParamsDto params)
+            throws InstanceNotFoundException, PermissionException, SessionAlreadyStartedException,
+            AlreadyDeliveredException, CreditCardDoesNotMatchException {
+
+        cinemaService.deliverTickets(userId, purchaseId, params.getCreditCardNumber());
+
+        return ResponseEntity.noContent().build();
     }
 
 }
