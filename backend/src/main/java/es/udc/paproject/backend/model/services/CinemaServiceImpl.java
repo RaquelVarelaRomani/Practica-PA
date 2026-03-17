@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import es.udc.paproject.backend.model.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +32,9 @@ public class CinemaServiceImpl implements CinemaService {
 
     //para func 1 ver las pelis que hay en cartelera
     @Override
-    public Block<Movie> findMovies(LocalDate date) {
+    public List<MovieWithSessions> findMovies(LocalDate date) {
 
         //1)calculamos el rango del día (de 00:00:00 a 23:59:59)
-
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(LocalTime.MAX);
 
@@ -46,8 +46,13 @@ public class CinemaServiceImpl implements CinemaService {
         //3)recuperamos las pelis con sesiones en ese rango (ordenadas por título)
         List<Movie> movies = movieDao.findMoviesWithSessionsBetween(start, end);
 
-        //4)devolvemos Block con películas
-        return new Block<>(movies, false);
+        //4)para cada película, recuperamos sus sesiones en ese rango
+        LocalDateTime finalStart = start;
+        return movies.stream().map(movie -> {
+            List<Session> sessions = sessionDao.findByMovieIdAndStartTimeBetweenOrderByStartTimeAsc(
+                    movie.getId(), finalStart, end);
+            return new MovieWithSessions(movie, sessions);
+        }).collect(Collectors.toList());
     }
 
     //para func 2 encontrar la peli y ver su info

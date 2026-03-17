@@ -3,7 +3,7 @@ package es.udc.paproject.backend.test.model.services;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +23,7 @@ import es.udc.paproject.backend.model.entities.Purchase;
 import es.udc.paproject.backend.model.entities.PurchaseDao;
 import es.udc.paproject.backend.model.services.Block;
 import es.udc.paproject.backend.model.services.CinemaService;
+import es.udc.paproject.backend.model.services.MovieWithSessions;
 import es.udc.paproject.backend.model.services.SessionDetails;
 import es.udc.paproject.backend.model.exceptions.*;
 
@@ -99,14 +100,17 @@ public class CinemaServiceTest {
         //1) ESCENARIO: Creamos una película y una sesión para un día concreto
         Movie movie = createMovie("Dune");
         Room room = createRoom("Sala 1");
-        LocalDate date = LocalDate.of(2026, 3, 4);
-        createSession(movie, room, date.atTime(21, 0)); // Sesión a las 21:00
+        LocalDate date = LocalDate.now().plusDays(2);
+        Session session = createSession(movie, room, date.atTime(21, 0));
 
         //2) ACCIÓN: Buscamos las películas de ese día a través del servicio
-        Block<Movie> movieBlock = cinemaService.findMovies(date);
+        List<MovieWithSessions> result = cinemaService.findMovies(date);
 
-        //3) VERIFICACIÓN: Comprobamos que el bloque contiene nuestra película
-        assertEquals(Arrays.asList(movie), movieBlock.getItems());
+        //3) VERIFICACIÓN: Comprobamos que contiene nuestra película con su sesión
+        assertEquals(1, result.size());
+        assertEquals(movie, result.get(0).getMovie());
+        assertEquals(1, result.get(0).getSessions().size());
+        assertEquals(session.getId(), result.get(0).getSessions().get(0).getId());
     }
 
     @Test
@@ -115,18 +119,18 @@ public class CinemaServiceTest {
         Movie movieB = createMovie("Batman");
         Movie movieA = createMovie("Avatar");
         Room room = createRoom("Sala 1");
-        LocalDate date = LocalDate.now().plusDays(1); //mañana
+        LocalDate date = LocalDate.now().plusDays(1);
 
         createSession(movieA, room, date.atTime(18, 0));
         createSession(movieB, room, date.atTime(20, 0));
 
         //2) ACCION: ver cartelera
-        Block<Movie> movieBlock = cinemaService.findMovies(date);
+        List<MovieWithSessions> result = cinemaService.findMovies(date);
 
-        //3) VERIFICACION: avatar tiene que ir antes por el orden alfabetico y tiene que dar dos
-        assertEquals(2, movieBlock.getItems().size());
-        assertEquals(movieA, movieBlock.getItems().get(0));
-        assertEquals(movieB, movieBlock.getItems().get(1));
+        //3) VERIFICACION: avatar tiene que ir antes por el orden alfabetico
+        assertEquals(2, result.size());
+        assertEquals(movieA, result.get(0).getMovie());
+        assertEquals(movieB, result.get(1).getMovie());
     }
 
     @Test
@@ -142,8 +146,7 @@ public class CinemaServiceTest {
         //La sesión pasada no debe aparecer
         LocalDateTime pastSessionTime = now.minusHours(2);
 
-        //La futura debería aparecer
-        //Ponemos la futura dentro del mismo día para que el test no dependa de la hora actual
+        //La futura dentro del mismo día
         LocalDateTime futureSessionTime = today.atTime(23, 0);
         if (!futureSessionTime.isAfter(now)) {
             futureSessionTime = now.plusMinutes(30);
@@ -153,11 +156,11 @@ public class CinemaServiceTest {
         createSession(movieFuture, room, futureSessionTime);
 
         //2) ACCION: buscar las pelis para hoy
-        Block<Movie> movieBlock = cinemaService.findMovies(now.toLocalDate());
+        List<MovieWithSessions> result = cinemaService.findMovies(today);
 
         //3) VERIFICACION: solo debe enseñar la que aun no fue
-        assertEquals(1, movieBlock.getItems().size());
-        assertEquals(movieFuture, movieBlock.getItems().get(0));
+        assertEquals(1, result.size());
+        assertEquals(movieFuture, result.get(0).getMovie());
     }
 
     @Test
@@ -166,10 +169,10 @@ public class CinemaServiceTest {
         LocalDate date = LocalDate.now().plusDays(5);
 
         //2) ACCION: ver la cartelera
-        Block<Movie> movieBlock = cinemaService.findMovies(date);
+        List<MovieWithSessions> result = cinemaService.findMovies(date);
 
         //3) VERIFICACION: que la lista este vacia
-        assertTrue(movieBlock.getItems().isEmpty());
+        assertTrue(result.isEmpty());
     }
 
     // TESTS FUNC-2

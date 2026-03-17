@@ -1,8 +1,6 @@
 package es.udc.paproject.backend.rest.controllers;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -23,12 +21,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import es.udc.paproject.backend.model.entities.Movie;
-import es.udc.paproject.backend.model.entities.Session;
-import es.udc.paproject.backend.model.entities.SessionDao;
 import es.udc.paproject.backend.model.entities.Purchase;
+import es.udc.paproject.backend.model.services.MovieWithSessions;
 import es.udc.paproject.backend.model.services.SessionDetails;
-import es.udc.paproject.backend.model.services.Block;
 import es.udc.paproject.backend.model.services.CinemaService;
 
 @RestController
@@ -45,9 +40,6 @@ public class CinemaController {
 
     @Autowired
     private CinemaService cinemaService;
-
-    @Autowired
-    private SessionDao sessionDao;
 
     @ExceptionHandler(SessionAlreadyStartedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -74,33 +66,21 @@ public class CinemaController {
     }
 
     @GetMapping("/movies")
-    public List<MovieSummaryDto> findMovies
-            (@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    public List<MovieSummaryDto> findMovies(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
         LocalDate localDate = (date != null) ? date : LocalDate.now();
 
-        Block<Movie> movieBlock = cinemaService.findMovies(localDate);
-        List<Movie> movies = movieBlock.getItems();
+        List<MovieWithSessions> moviesWithSessions = cinemaService.findMovies(localDate);
 
-        return movies.stream().map(movie -> {
-            LocalDateTime start = localDate.atStartOfDay();
-            LocalDateTime end = localDate.atTime(LocalTime.MAX);
-
-            if (localDate.equals(LocalDate.now())) {
-                start = LocalDateTime.now();
-            }
-
-            List<Session> sessions = sessionDao.findByMovieIdAndStartTimeBetweenOrderByStartTimeAsc(
-                    movie.getId(), start, end);
-
-            return CinemaConversor.toMovieSummaryDto(movie, sessions);
-        }).collect(Collectors.toList());
+        return moviesWithSessions.stream()
+                .map(mws -> CinemaConversor.toMovieSummaryDto(mws.getMovie(), mws.getSessions()))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/movies/{id}")
     public MovieDto findMovie(@PathVariable Long id) throws InstanceNotFoundException {
-        Movie movie = cinemaService.findMovie(id);
-        return CinemaConversor.toMovieDto(movie);
+        return CinemaConversor.toMovieDto(cinemaService.findMovie(id));
     }
 
     @GetMapping("/sessions/{id}")
