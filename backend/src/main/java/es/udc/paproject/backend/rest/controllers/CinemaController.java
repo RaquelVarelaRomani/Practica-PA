@@ -22,6 +22,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import es.udc.paproject.backend.model.entities.Purchase;
+import es.udc.paproject.backend.model.services.Block;
 import es.udc.paproject.backend.model.services.MovieWithSessions;
 import es.udc.paproject.backend.model.services.SessionDetails;
 import es.udc.paproject.backend.model.services.CinemaService;
@@ -99,6 +100,16 @@ public class CinemaController {
                 params.getNumberTickets(), params.getCreditCardNumber());
 
         return CinemaConversor.toPurchaseDto(purchase);
+    }
+
+    @GetMapping("/purchases")
+    public BlockDto<PurchaseSummaryDto> findPurchases(@RequestAttribute Long userId,
+                                                     @RequestParam(defaultValue = "0") int page) {
+
+        Block<Purchase> purchaseBlock = cinemaService.findPurchases(userId, page, 2);
+
+        return new BlockDto<>(CinemaConversor.toPurchaseSummaryDtos(purchaseBlock.getItems()),
+                purchaseBlock.getExistMoreItems());
     }
 
 }

@@ -42,12 +42,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/cinema/sessions/*").permitAll()
                         //FUNC-4 comprar entrada
                         .requestMatchers(HttpMethod.POST, "/cinema/buy").hasRole("VIEWER")
-						//lo modifique porque el enunciado decia lo de los roles
+                        //FUNC-5 historico de compras
+                        .requestMatchers(HttpMethod.GET, "/cinema/purchases").hasRole("VIEWER")
 						.requestMatchers(HttpMethod.PUT, "/users/*").hasAnyRole("VIEWER", "TICKET_SELLER")
 						.requestMatchers(HttpMethod.POST, "/users/*/changePassword").hasAnyRole("VIEWER", "TICKET_SELLER")
-						//codigo antes de modificarlo por si acaso:
-						//.requestMatchers(HttpMethod.PUT, "/users/*").hasRole("USER")
-						//.requestMatchers(HttpMethod.POST, "/users/*/changePassword").hasRole("USER")
 						.anyRequest().denyAll());
 
 		return http.build();
