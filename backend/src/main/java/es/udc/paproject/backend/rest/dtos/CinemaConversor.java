@@ -1,5 +1,6 @@
 package es.udc.paproject.backend.rest.dtos;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +56,26 @@ public class CinemaConversor {
                 purchase.getCreditCardNumber(),
                 purchase.getUser().getId(),
                 purchase.getSession().getId(),
+                purchase.isDelivered()
+        );
+    }
+
+    //FUNC-5: convertir lista de purchases en lista de PurchaseSummaryDto
+    public static List<PurchaseSummaryDto> toPurchaseSummaryDtos(List<Purchase> purchases) {
+        return purchases.stream().map(CinemaConversor::toPurchaseSummaryDto).collect(Collectors.toList());
+    }
+
+    private static PurchaseSummaryDto toPurchaseSummaryDto(Purchase purchase) {
+        BigDecimal totalPrice = purchase.getSession().getPrice()
+                .multiply(BigDecimal.valueOf(purchase.getNumberTickets()));
+
+        return new PurchaseSummaryDto(
+                purchase.getId(),
+                purchase.getPurchaseDate(),
+                purchase.getSession().getMovie().getTitle(),
+                purchase.getNumberTickets(),
+                totalPrice,
+                purchase.getSession().getStartTime(),
                 purchase.isDelivered()
         );
     }
