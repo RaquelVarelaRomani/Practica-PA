@@ -388,4 +388,95 @@ public class CinemaServiceTest {
         assertEquals(older.getId(), result.getItems().get(1).getId());
     }
 
+    // TESTS FUNC-6
+
+    @Test
+    public void testDeliverTickets() throws Exception {
+        //Entrega correcta de entradas
+        User viewer = createUser("viewer8");
+        User seller = createTicketSeller("seller2");
+        Movie movie = createMovie("Gladiator");
+        Room room = createRoom("Sala 12");
+        Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
+
+        Purchase purchase = createPurchase(viewer, session, 3, "1234567890123456");
+        assertFalse(purchase.isDelivered());
+
+        cinemaService.deliverTickets(seller.getId(), purchase.getId(), "1234567890123456");
+
+        assertTrue(purchase.isDelivered());
+    }
+
+    @Test
+    public void testDeliverTicketsNonExistentPurchase() {
+        //Compra que no existe
+        User seller = createTicketSeller("seller3");
+
+        assertThrows(InstanceNotFoundException.class,
+                () -> cinemaService.deliverTickets(seller.getId(), NON_EXISTENT_ID, "1234567890123456"));
+    }
+
+    @Test
+    public void testDeliverTicketsCreditCardDoesNotMatch() {
+        //Tarjeta de crédito no coincide
+        User viewer = createUser("viewer9");
+        User seller = createTicketSeller("seller4");
+        Movie movie = createMovie("Inception");
+        Room room = createRoom("Sala 13");
+        Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
+
+        Purchase purchase = createPurchase(viewer, session, 2, "1234567890123456");
+
+        assertThrows(CreditCardDoesNotMatchException.class,
+                () -> cinemaService.deliverTickets(seller.getId(), purchase.getId(), "9999999999999999"));
+    }
+
+    @Test
+    public void testDeliverTicketsSessionAlreadyStarted() {
+        //La sesión ya empezó
+        User viewer = createUser("viewer10");
+        User seller = createTicketSeller("seller5");
+        Movie movie = createMovie("Memento");
+        Room room = createRoom("Sala 14");
+        Session session = createSession(movie, room, LocalDateTime.now().minusMinutes(5));
+
+        Purchase purchase = createPurchase(viewer, session, 1, "1234567890123456");
+
+        assertThrows(SessionAlreadyStartedException.class,
+                () -> cinemaService.deliverTickets(seller.getId(), purchase.getId(), "1234567890123456"));
+    }
+
+    @Test
+    public void testDeliverTicketsAlreadyDelivered() throws Exception {
+        //Las entradas ya fueron entregadas
+        User viewer = createUser("viewer11");
+        User seller = createTicketSeller("seller6");
+        Movie movie = createMovie("Pulp Fiction");
+        Room room = createRoom("Sala 15");
+        Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
+
+        Purchase purchase = createPurchase(viewer, session, 2, "1234567890123456");
+
+        //Primera entrega correcta
+        cinemaService.deliverTickets(seller.getId(), purchase.getId(), "1234567890123456");
+
+        //Segunda entrega falla
+        assertThrows(AlreadyDeliveredException.class,
+                () -> cinemaService.deliverTickets(seller.getId(), purchase.getId(), "1234567890123456"));
+    }
+
+    @Test
+    public void testDeliverTicketsViewerCannotDeliver() {
+        //Un espectador no puede entregar entradas
+        User viewer = createUser("viewer12");
+        Movie movie = createMovie("Fight Club");
+        Room room = createRoom("Sala 16");
+        Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
+
+        Purchase purchase = createPurchase(viewer, session, 1, "1234567890123456");
+
+        assertThrows(PermissionException.class,
+                () -> cinemaService.deliverTickets(viewer.getId(), purchase.getId(), "1234567890123456"));
+    }
+
 }

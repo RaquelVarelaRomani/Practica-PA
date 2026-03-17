@@ -5,10 +5,7 @@ import java.util.List;
 
 import es.udc.paproject.backend.model.entities.Movie;
 import es.udc.paproject.backend.model.entities.Purchase;
-import es.udc.paproject.backend.model.exceptions.InstanceNotFoundException;
-import es.udc.paproject.backend.model.exceptions.NotEnoughTicketsException;
-import es.udc.paproject.backend.model.exceptions.PermissionException;
-import es.udc.paproject.backend.model.exceptions.SessionAlreadyStartedException;
+import es.udc.paproject.backend.model.exceptions.*;
 
 public interface CinemaService {
     //FUNC-1 Recuperar películas de cartelera para x día
@@ -23,4 +20,9 @@ public interface CinemaService {
 
     //FUNC-5 Visualizar el historico de compras
     Block<Purchase> findPurchases(Long userId, int page, int size);
+
+    //FUNC-6 Entregar las entradas de una compra
+    void deliverTickets(Long userId, Long purchaseId, String creditCardNumber)
+            throws InstanceNotFoundException, PermissionException, SessionAlreadyStartedException,
+            AlreadyDeliveredException, CreditCardDoesNotMatchException;
 }

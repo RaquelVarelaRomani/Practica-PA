@@ -140,4 +140,45 @@ public class CinemaServiceImpl implements CinemaService {
         return new Block<>(slice.getContent(), slice.hasNext());
     }
 
+    //para FUNC-6 entregar las entradas de una compra
+    @Override
+    @Transactional
+    public void deliverTickets(Long userId, Long purchaseId, String creditCardNumber)
+            throws InstanceNotFoundException, PermissionException, SessionAlreadyStartedException,
+            AlreadyDeliveredException, CreditCardDoesNotMatchException {
+
+        User user = permissionChecker.checkUser(userId);
+
+        //Solo el taquillero puede entregar entradas
+        if (user.getRole() != User.RoleType.TICKET_SELLER) {
+            throw new PermissionException();
+        }
+
+        //Buscamos la compra
+        Optional<Purchase> optionalPurchase = purchaseDao.findById(purchaseId);
+        if (!optionalPurchase.isPresent()) {
+            throw new InstanceNotFoundException("project.entities.purchase", purchaseId);
+        }
+
+        Purchase purchase = optionalPurchase.get();
+
+        //Verificamos que la tarjeta de crédito coincida
+        if (!purchase.getCreditCardNumber().equals(creditCardNumber)) {
+            throw new CreditCardDoesNotMatchException();
+        }
+
+        //Verificamos que la sesión no haya empezado
+        if (!purchase.getSession().getStartTime().isAfter(LocalDateTime.now())) {
+            throw new SessionAlreadyStartedException();
+        }
+
+        //Verificamos que no se hayan entregado ya
+        if (purchase.isDelivered()) {
+            throw new AlreadyDeliveredException();
+        }
+
+        //Marcamos como entregada (dirty checking se encarga del UPDATE)
+        purchase.setDelivered(true);
+    }
+
 }
