@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import es.udc.paproject.backend.model.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -127,6 +129,15 @@ public class CinemaServiceImpl implements CinemaService {
 
         Purchase purchase = new Purchase(LocalDateTime.now(), numberTickets, creditCardNumber, user, session);
         return purchaseDao.save(purchase);
+    }
+
+    //para FUNC-5 ver el historial de compras del usuario
+    @Override
+    public Block<Purchase> findPurchases(Long userId, int page, int size) {
+
+        Slice<Purchase> slice = purchaseDao.findByUserIdOrderByPurchaseDateDesc(userId, PageRequest.of(page, size));
+
+        return new Block<>(slice.getContent(), slice.hasNext());
     }
 
 }

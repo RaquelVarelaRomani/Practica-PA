@@ -21,10 +21,7 @@ import es.udc.paproject.backend.model.entities.User;
 import es.udc.paproject.backend.model.entities.UserDao;
 import es.udc.paproject.backend.model.entities.Purchase;
 import es.udc.paproject.backend.model.entities.PurchaseDao;
-import es.udc.paproject.backend.model.services.Block;
-import es.udc.paproject.backend.model.services.CinemaService;
-import es.udc.paproject.backend.model.services.MovieWithSessions;
-import es.udc.paproject.backend.model.services.SessionDetails;
+import es.udc.paproject.backend.model.services.*;
 import es.udc.paproject.backend.model.exceptions.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -333,6 +330,62 @@ public class CinemaServiceTest {
 
         assertThrows(PermissionException.class,
                 () -> cinemaService.buyTickets(ticketSeller.getId(), session.getId(), 1, "1234567890123456"));
+    }
+
+    // TESTS FUNC-5
+
+    @Test
+    public void testFindPurchases() throws Exception {
+        //Compras de un usuario con paginación (size=2)
+        User user = createUser("viewer5");
+        Movie movie = createMovie("Titanic");
+        Room room = createRoom("Sala 10");
+        Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
+
+        Purchase purchase1 = createPurchase(user, session, 2, "1111222233334444");
+        Purchase purchase2 = createPurchase(user, session, 3, "1111222233334444");
+        Purchase purchase3 = createPurchase(user, session, 1, "1111222233334444");
+
+        //Primera página (size=2): debe tener 2 compras y existMoreItems=true
+        Block<Purchase> page0 = cinemaService.findPurchases(user.getId(), 0, 2);
+        assertEquals(2, page0.getItems().size());
+        assertTrue(page0.getExistMoreItems());
+
+        //Segunda página: debe tener 1 compra y existMoreItems=false
+        Block<Purchase> page1 = cinemaService.findPurchases(user.getId(), 1, 2);
+        assertEquals(1, page1.getItems().size());
+        assertFalse(page1.getExistMoreItems());
+    }
+
+    @Test
+    public void testFindPurchasesNoPurchases() {
+        //Usuario sin compras
+        User user = createUser("viewer6");
+
+        Block<Purchase> result = cinemaService.findPurchases(user.getId(), 0, 2);
+        assertEquals(0, result.getItems().size());
+        assertFalse(result.getExistMoreItems());
+    }
+
+    @Test
+    public void testFindPurchasesOrderedByDateDesc() throws Exception {
+        //Las compras deben venir ordenadas por fecha descendente
+        User user = createUser("viewer7");
+        Movie movie = createMovie("El Padrino");
+        Room room = createRoom("Sala 11");
+        Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
+
+        //Creamos compras con fechas diferentes simulando orden
+        Purchase older = purchaseDao.save(new Purchase(
+                LocalDateTime.now().minusHours(2), 1, "1111222233334444", user, session));
+        Purchase newer = purchaseDao.save(new Purchase(
+                LocalDateTime.now().minusHours(1), 2, "5555666677778888", user, session));
+
+        Block<Purchase> result = cinemaService.findPurchases(user.getId(), 0, 2);
+        assertEquals(2, result.getItems().size());
+        //La más reciente debe estar primera
+        assertEquals(newer.getId(), result.getItems().get(0).getId());
+        assertEquals(older.getId(), result.getItems().get(1).getId());
     }
 
 }

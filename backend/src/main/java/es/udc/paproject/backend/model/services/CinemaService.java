@@ -20,4 +20,7 @@ public interface CinemaService {
     SessionDetails findSession(Long sessionId) throws InstanceNotFoundException;
     //FUNC-4 Comprar entradas
     Purchase buyTickets(Long userId, Long sessionId, Integer numberTickets, String creditCardNumber) throws InstanceNotFoundException, PermissionException, SessionAlreadyStartedException, NotEnoughTicketsException;
+
+    //FUNC-5 Visualizar el historico de compras
+    Block<Purchase> findPurchases(Long userId, int page, int size);
 }
