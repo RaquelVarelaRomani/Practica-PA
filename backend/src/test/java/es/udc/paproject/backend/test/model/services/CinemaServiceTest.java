@@ -196,7 +196,7 @@ public class CinemaServiceTest {
 
     //TESTS FUNC-3
     @Test
-    public void testFindSessionWithoutPurchases() throws InstanceNotFoundException {
+    public void testFindSessionWithoutPurchases() throws InstanceNotFoundException, SessionAlreadyStartedException {
         //Sesión sin compras
         Movie movie = createMovie("Interstellar");
         Room room = createRoom("Sala 2");
@@ -210,7 +210,7 @@ public class CinemaServiceTest {
     }
 
     @Test
-    public void testFindSessionWithPurchases() throws InstanceNotFoundException {
+    public void testFindSessionWithPurchases() throws InstanceNotFoundException, SessionAlreadyStartedException {
         //Sesión con compras ya realizadas
         Movie movie = createMovie("Blade Runner");
         Room room = createRoom("Sala 3");
@@ -231,7 +231,7 @@ public class CinemaServiceTest {
     }
 
     @Test
-    public void testFindSessionWithNoAvailableTickets() throws InstanceNotFoundException {
+    public void testFindSessionWithNoAvailableTickets() throws InstanceNotFoundException, SessionAlreadyStartedException {
         //Sesión sin butacas disponibles
         Movie movie = createMovie("Harry Potter");
         Room room = createRoom("Sala 4");
@@ -250,6 +250,17 @@ public class CinemaServiceTest {
         //Buscamos una sesión que no existe
         assertThrows(InstanceNotFoundException.class,
                 () -> cinemaService.findSession(NON_EXISTENT_ID));
+    }
+
+    @Test
+    public void testFindSessionAlreadyStarted() {
+        // Sesión ya comenzada
+        Movie movie = createMovie("Dune");
+        Room room = createRoom("Sala 1");
+        Session session = createSession(movie, room, LocalDateTime.now().minusMinutes(5));
+
+        assertThrows(SessionAlreadyStartedException.class,
+                () -> cinemaService.findSession(session.getId()));
     }
 
     //TESTS FUNC-4
