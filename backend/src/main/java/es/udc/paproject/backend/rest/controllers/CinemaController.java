@@ -119,7 +119,7 @@ public class CinemaController {
     }
 
     @GetMapping("/sessions/{id}")
-    public SessionDto findSession(@PathVariable Long id) throws InstanceNotFoundException {
+    public SessionDto findSession(@PathVariable Long id) throws InstanceNotFoundException, SessionAlreadyStartedException {
         SessionDetails sessionDetails = cinemaService.findSession(id);
         return CinemaConversor.toSessionDto(sessionDetails);
     }

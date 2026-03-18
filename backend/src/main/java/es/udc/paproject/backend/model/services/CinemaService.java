@@ -14,7 +14,7 @@ public interface CinemaService {
     Movie findMovie(Long movieId) throws InstanceNotFoundException;
 
     //FUNC-3 Recuperar información detallada de una sesión
-    SessionDetails findSession(Long sessionId) throws InstanceNotFoundException;
+    SessionDetails findSession(Long sessionId) throws InstanceNotFoundException, SessionAlreadyStartedException;
     //FUNC-4 Comprar entradas
     Purchase buyTickets(Long userId, Long sessionId, Integer numberTickets, String creditCardNumber) throws InstanceNotFoundException, PermissionException, SessionAlreadyStartedException, NotEnoughTicketsException;
 

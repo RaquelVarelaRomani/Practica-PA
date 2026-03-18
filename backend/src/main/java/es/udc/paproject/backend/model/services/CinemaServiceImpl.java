@@ -79,7 +79,7 @@ public class CinemaServiceImpl implements CinemaService {
 
     //para FUNC-3 encontrar la sesión y ver su info
     @Override
-    public SessionDetails findSession (Long sessionId) throws InstanceNotFoundException {
+    public SessionDetails findSession (Long sessionId) throws InstanceNotFoundException, SessionAlreadyStartedException {
         //Buscamos la sesión por el id
         Optional<Session> optionalSession = sessionDao.findById(sessionId);
 
@@ -88,8 +88,13 @@ public class CinemaServiceImpl implements CinemaService {
             throw new InstanceNotFoundException("project.entities.session", sessionId);
         }
 
+
         //Recuperamos las compras de la sesión
         Session session = optionalSession.get();
+        if(session.getStartTime().isBefore(LocalDateTime.now())) {
+            throw new SessionAlreadyStartedException();
+        }
+
         List<Purchase> purchases = purchaseDao.findBySessionId(sessionId);
 
         //Sumamos cuantas entradas se vendieron
