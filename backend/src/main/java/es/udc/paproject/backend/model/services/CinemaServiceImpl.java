@@ -36,6 +36,11 @@ public class CinemaServiceImpl implements CinemaService {
     @Override
     public List<MovieWithSessions> findMovies(LocalDate date) {
 
+        //si es antes de hoy o dentro de 1 mes
+        if (date.isBefore(LocalDate.now()) || date.isAfter(LocalDate.now().plusDays(30))) {
+            //voy a manejar esto en el controlador
+        }
+
         //1)calculamos el rango del día (de 00:00:00 a 23:59:59)
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(LocalTime.MAX);

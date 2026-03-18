@@ -31,14 +31,17 @@ public class SecurityConfig {
 				.sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(new JwtFilter(jwtGenerator), UsernamePasswordAuthenticationFilter.class)
 				.authorizeHttpRequests((authorize) -> authorize
+						.requestMatchers("/error").permitAll()
+
 						.requestMatchers(HttpMethod.POST, "/users/signUp").permitAll()
 						.requestMatchers(HttpMethod.POST, "/users/login").permitAll()
 						.requestMatchers(HttpMethod.POST, "/users/loginFromServiceToken").permitAll()
 						//FUNC-1 acceso a la cartelera
 						//.requestMatchers(HttpMethod.GET, "/cinema/movies").permitAll()
 						//FUNC-2 edito el de arriba porque ademas de ver la cartelera tenemos que poder ver cada peli
-						.requestMatchers(HttpMethod.GET, "/cinema/movies", "/cinema/movies/*").permitAll()
-                        //FUNC-3 detalle de sesion
+						//.requestMatchers(HttpMethod.GET, "/cinema/movies", "/cinema/movies/*").permitAll()
+						.requestMatchers(HttpMethod.GET, "/cinema/movies/**").permitAll()
+						//FUNC-3 detalle de sesion
                         .requestMatchers(HttpMethod.GET, "/cinema/sessions/*").permitAll()
                         //FUNC-4 comprar entrada
                         .requestMatchers(HttpMethod.POST, "/cinema/buy").hasRole("VIEWER")
