@@ -9,7 +9,7 @@ import es.udc.paproject.backend.model.exceptions.*;
 
 public interface CinemaService {
     //FUNC-1 Recuperar películas de cartelera para x día
-    List<MovieWithSessions> findMovies(LocalDate date);
+    List<MovieWithSessions> findMovies(LocalDate date) throws MaxRangeDateException;
     //FUNC-2 Recuperar información detallada de una película
     Movie findMovie(Long movieId) throws InstanceNotFoundException;
 

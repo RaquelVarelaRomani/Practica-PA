@@ -25,8 +25,6 @@ import es.udc.paproject.backend.model.services.MovieWithSessions;
 import es.udc.paproject.backend.model.services.SessionDetails;
 import es.udc.paproject.backend.model.services.CinemaService;
 
-import org.springframework.web.server.ResponseStatusException;
-
 
 @RestController
 @RequestMapping("/cinema")
@@ -97,14 +95,10 @@ public class CinemaController {
 
     @GetMapping("/movies")
     public List<MovieSummaryDto> findMovies(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date)
+            throws MaxRangeDateException {
 
         LocalDate localDate = (date != null) ? date : LocalDate.now();
-
-        //si la fecha es anterior a hoy o despues de un mes
-        if (localDate.isBefore(LocalDate.now()) || localDate.isAfter(LocalDate.now().plusDays(30))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Fecha fuera de rango permitido");
-        }
 
         List<MovieWithSessions> moviesWithSessions = cinemaService.findMovies(localDate);
 

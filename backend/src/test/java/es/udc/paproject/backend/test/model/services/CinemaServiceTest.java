@@ -93,7 +93,7 @@ public class CinemaServiceTest {
     // TESTS FUNC-1
 
     @Test
-    public void testFindMoviesByDate() {
+    public void testFindMoviesByDate() throws MaxRangeDateException {
         //1) ESCENARIO: Creamos una película y una sesión para un día concreto
         Movie movie = createMovie("Dune");
         Room room = createRoom("Sala 1");
@@ -111,7 +111,7 @@ public class CinemaServiceTest {
     }
 
     @Test
-    public void testFindMoviesOrderedAlphabetically() {
+    public void testFindMoviesOrderedAlphabetically() throws MaxRangeDateException {
         //1) ESCENARIO: crear pelis y sesiones
         Movie movieB = createMovie("Batman");
         Movie movieA = createMovie("Avatar");
@@ -131,7 +131,7 @@ public class CinemaServiceTest {
     }
 
     @Test
-    public void testFindMoviesTodayExcludingPastSessions() {
+    public void testFindMoviesTodayExcludingPastSessions() throws MaxRangeDateException {
         //1) ESCENARIO: peli con sesion pasada y peli con sesion futura
         Movie moviePast = createMovie("Peli antigua");
         Movie movieFuture = createMovie("Peli nueva");
@@ -161,7 +161,7 @@ public class CinemaServiceTest {
     }
 
     @Test
-    public void testFindMoviesNoSessionsForDate() {
+    public void testFindMoviesNoSessionsForDate() throws MaxRangeDateException {
         //1) ESCENARIO: nada programado y no puede devolver ninguna
         LocalDate date = LocalDate.now().plusDays(5);
 
@@ -170,6 +170,18 @@ public class CinemaServiceTest {
 
         //3) VERIFICACION: que la lista este vacia
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testFindMoviesDateBeforeTodayThrowsException() {
+        assertThrows(MaxRangeDateException.class,
+                () -> cinemaService.findMovies(LocalDate.now().minusDays(1)));
+    }
+
+    @Test
+    public void testFindMoviesDateAfterNextSixDaysThrowsException() {
+        assertThrows(MaxRangeDateException.class,
+                () -> cinemaService.findMovies(LocalDate.now().plusDays(7)));
     }
 
     // TESTS FUNC-2

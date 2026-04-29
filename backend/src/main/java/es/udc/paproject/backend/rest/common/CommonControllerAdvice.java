@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import es.udc.paproject.backend.model.exceptions.DuplicateInstanceException;
 import es.udc.paproject.backend.model.exceptions.InstanceNotFoundException;
+import es.udc.paproject.backend.model.exceptions.MaxRangeDateException;
 import es.udc.paproject.backend.model.exceptions.PermissionException;
 
 @ControllerAdvice
@@ -22,6 +23,7 @@ public class CommonControllerAdvice {
 	
 	private final static String INSTANCE_NOT_FOUND_EXCEPTION_CODE = "project.exceptions.InstanceNotFoundException";
 	private final static String DUPLICATE_INSTANCE_EXCEPTION_CODE = "project.exceptions.DuplicateInstanceException";
+	private final static String MAX_RANGE_DATE_EXCEPTION_CODE = "project.exceptions.MaxRangeDateException";
 	private final static String PERMISSION_EXCEPTION_CODE = "project.exceptions.PermissionException";
 	
 	@Autowired
@@ -63,6 +65,18 @@ public class CommonControllerAdvice {
 
 		return new ErrorsDto(errorMessage);
 		
+	}
+
+	@ExceptionHandler(MaxRangeDateException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseBody
+	public ErrorsDto handleMaxRangeDateException(MaxRangeDateException exception, Locale locale) {
+
+		String errorMessage = messageSource.getMessage(MAX_RANGE_DATE_EXCEPTION_CODE, null,
+				MAX_RANGE_DATE_EXCEPTION_CODE, locale);
+
+		return new ErrorsDto(errorMessage);
+
 	}
 	
 	@ExceptionHandler(PermissionException.class)

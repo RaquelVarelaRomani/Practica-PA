@@ -7,17 +7,6 @@ import java.util.List;
 
 public interface SessionDao extends CrudRepository<Session, Long> {
 
-    //Sesiones futuras
-    List<Session> findByStartTimeAfterOrderByStartTimeAsc(LocalDateTime now);
-
-    //Sesiones de un día concreto
-    List<Session> findByStartTimeBetweenOrderByStartTimeAsc(LocalDateTime startTime, LocalDateTime endTime);
-
-    //Sesiones futuras de una película concreta
-    List<Session> findByMovieIdAndStartTimeAfterOrderByStartTimeAsc(Long movieId, LocalDateTime now);
-
-    //para la FUNC-1
-    //muestra horas por pelicula para ese dia
-    List<Session> findByMovieIdAndStartTimeBetweenOrderByStartTimeAsc(Long movieId, LocalDateTime start, LocalDateTime end);
+    List<Session> findByStartTimeBetweenOrderByMovieTitleAscStartTimeAsc(LocalDateTime startTime,
+                                                                         LocalDateTime endTime);
 }
-

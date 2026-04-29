@@ -3,9 +3,11 @@ package es.udc.paproject.backend.model.services;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import es.udc.paproject.backend.model.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,32 +36,35 @@ public class CinemaServiceImpl implements CinemaService {
 
     //para func 1 ver las pelis que hay en cartelera
     @Override
-    public List<MovieWithSessions> findMovies(LocalDate date) {
+    public List<MovieWithSessions> findMovies(LocalDate date) throws MaxRangeDateException {
 
-        //si es antes de hoy o dentro de 1 mes
-        if (date.isBefore(LocalDate.now()) || date.isAfter(LocalDate.now().plusDays(30))) {
-            //voy a manejar esto en el controlador
+        LocalDateTime now = LocalDateTime.now();
+        LocalDate today = now.toLocalDate();
+
+        if (date.isBefore(today) || date.isAfter(today.plusDays(6))) {
+            throw new MaxRangeDateException();
         }
 
-        //1)calculamos el rango del día (de 00:00:00 a 23:59:59)
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(LocalTime.MAX);
 
-        //2)hoy para no mostrar las sesiones pasadas
-        if (date.equals(LocalDate.now())) {
-            start = LocalDateTime.now();
+        if (date.equals(today)) {
+            start = now;
         }
 
-        //3)recuperamos las pelis con sesiones en ese rango (ordenadas por título)
-        List<Movie> movies = movieDao.findMoviesWithSessionsBetween(start, end);
+        List<Session> sessions = sessionDao.findByStartTimeBetweenOrderByMovieTitleAscStartTimeAsc(start, end);
+        Map<Long, Movie> moviesById = new LinkedHashMap<>();
+        Map<Long, List<Session>> sessionsByMovieId = new LinkedHashMap<>();
 
-        //4)para cada película, recuperamos sus sesiones en ese rango
-        LocalDateTime finalStart = start;
-        return movies.stream().map(movie -> {
-            List<Session> sessions = sessionDao.findByMovieIdAndStartTimeBetweenOrderByStartTimeAsc(
-                    movie.getId(), finalStart, end);
-            return new MovieWithSessions(movie, sessions);
-        }).collect(Collectors.toList());
+        for (Session session : sessions) {
+            Movie movie = session.getMovie();
+            moviesById.putIfAbsent(movie.getId(), movie);
+            sessionsByMovieId.computeIfAbsent(movie.getId(), key -> new ArrayList<>()).add(session);
+        }
+
+        return moviesById.entrySet().stream()
+                .map(entry -> new MovieWithSessions(entry.getValue(), sessionsByMovieId.get(entry.getKey())))
+                .toList();
     }
 
     //para func 2 encontrar la peli y ver su info
