@@ -199,6 +199,12 @@ public class CinemaServiceTest {
         assertEquals("Dune", foundMovie.getTitle());
     }
 
+    //test a modo de alarma que compruebe que no cogemos todas las sesiones
+    @Test
+    public void testMovieDoesNotExposeSessionsCollection() {
+        assertThrows(NoSuchMethodException.class, () -> Movie.class.getMethod("getSessions"));
+    }
+
     @Test
     public void testFindNonExistentIdMovie() {
         //1) ESCENARIO: buscar un id que no existe

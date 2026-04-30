@@ -2,8 +2,6 @@ package es.udc.paproject.backend.model.entities;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
 public class Movie {
 
@@ -11,7 +9,6 @@ public class Movie {
     private String title;
     private String summary;
     private int durationMinutes;
-    private List<Session> sessions;
 
     public  Movie() {}
 
@@ -34,8 +31,4 @@ public class Movie {
 
     public int getDurationMinutes() {return durationMinutes;}
     public void setDurationMinutes(int durationMinutes) {this.durationMinutes = durationMinutes;}
-
-    @OneToMany(mappedBy = "movie")
-    public List<Session> getSessions() {return sessions;}
-    public void setSessions(List<Session> sessions) {this.sessions = sessions;}
 }
