@@ -39,6 +39,8 @@ CREATE TABLE Session (
                          roomId BIGINT NOT NULL,
                          startTime DATETIME NOT NULL,
                          price DECIMAL(10,2) NOT NULL,
+                         availableTickets INT NOT NULL,
+                         version BIGINT NOT NULL DEFAULT 0,
                          CONSTRAINT SessionPK PRIMARY KEY (id),
                          CONSTRAINT SessionMovieIdFK FOREIGN KEY (movieId) REFERENCES Movie (id),
                          CONSTRAINT SessionRoomIdFK FOREIGN KEY (roomId) REFERENCES Room (id)

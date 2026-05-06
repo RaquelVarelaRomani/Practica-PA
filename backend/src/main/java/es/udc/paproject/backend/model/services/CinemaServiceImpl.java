@@ -94,20 +94,12 @@ public class CinemaServiceImpl implements CinemaService {
         }
 
 
-        //Recuperamos las compras de la sesión
         Session session = optionalSession.get();
-        if(session.getStartTime().isBefore(LocalDateTime.now())) {
+        if(session.hasStarted()) {
             throw new SessionAlreadyStartedException();
         }
 
-        List<Purchase> purchases = purchaseDao.findBySessionId(sessionId);
-
-        //Sumamos cuantas entradas se vendieron
-        int soldTickets = purchases.stream().mapToInt(Purchase::getNumberTickets).sum();
-        //Calculamos cuantas quedan
-        int availableTickets = session.getRoom().getCapacity() - soldTickets;
-        //Devolvemos los datos juntos
-        return new SessionDetails(session, availableTickets);
+        return new SessionDetails(session);
     }
 
     //para FUNC-4 realizar una compra

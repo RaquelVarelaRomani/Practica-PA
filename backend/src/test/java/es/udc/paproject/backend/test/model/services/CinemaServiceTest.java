@@ -87,6 +87,8 @@ public class CinemaServiceTest {
 
     //Crea un compra de un usuario
     private Purchase createPurchase(User user, Session session, int numberTickets, String creditCardNumber) {
+        session.setAvailableTickets(session.getAvailableTickets() - numberTickets);
+        sessionDao.save(session);
         return purchaseDao.save(new Purchase(LocalDateTime.now(), numberTickets, creditCardNumber, user, session));
     }
 

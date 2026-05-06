@@ -4,17 +4,15 @@ import es.udc.paproject.backend.model.entities.Session;
 
 public class SessionDetails {
     private Session session;
-    private int availableTickets;
 
-    public SessionDetails(Session session, int availableTickets) {
+    public SessionDetails(Session session) {
         this.session = session;
-        this.availableTickets = availableTickets;
     }
 
     public Session getSession() {
         return session;
     }
     public int getAvailableTickets() {
-        return availableTickets;
+        return session.getAvailableTickets();
     }
 }

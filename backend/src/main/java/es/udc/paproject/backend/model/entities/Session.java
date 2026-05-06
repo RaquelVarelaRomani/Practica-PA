@@ -1,10 +1,10 @@
 package es.udc.paproject.backend.model.entities;
-
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+
+
 
 @Entity
 public class Session {
@@ -14,7 +14,8 @@ public class Session {
     private Room room;
     private LocalDateTime startTime;
     private BigDecimal price;
-    private List<Purchase> purchases;
+    private Integer availableTickets;
+    private Long version;
 
     public  Session() {}
 
@@ -23,6 +24,7 @@ public class Session {
         this.room = room;
         this.startTime = startTime;
         this.price = price;
+        this.availableTickets = room.getCapacity();
     }
 
     @Id
@@ -46,8 +48,13 @@ public class Session {
     public BigDecimal getPrice() {return price;}
     public void setPrice(BigDecimal price) {this.price = price;}
 
-    @OneToMany(mappedBy = "session")
-    public List<Purchase> getPurchases() { return purchases; }
-    public void setPurchases(List<Purchase> purchases) { this.purchases = purchases; }
+    public Integer getAvailableTickets() {return availableTickets;}
+    public void setAvailableTickets(Integer availableTickets) {this.availableTickets = availableTickets;}
+
+    @Version
+    public Long getVersion() {return version;}
+    public void setVersion(Long version) {this.version = version;}
+
+    public boolean hasStarted() {return !startTime.isAfter(LocalDateTime.now());}
 }
 
