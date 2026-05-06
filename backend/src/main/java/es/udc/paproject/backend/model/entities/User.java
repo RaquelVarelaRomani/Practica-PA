@@ -2,8 +2,6 @@ package es.udc.paproject.backend.model.entities;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
 public class User {
 	
@@ -16,7 +14,6 @@ public class User {
 	private String lastName;
 	private String email;
 	private RoleType role;
-    private List<Purchase> purchases;
 
 	public User() {}
 
@@ -89,7 +86,4 @@ public class User {
 		this.role = role;
 	}
 
-    @OneToMany(mappedBy = "user")
-    public List<Purchase> getPurchases() { return purchases; }
-    public void setPurchases(List<Purchase> purchases) {this.purchases = purchases;}
 }

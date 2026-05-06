@@ -16,7 +16,7 @@ public interface CinemaService {
     //FUNC-3 Recuperar información detallada de una sesión
     SessionDetails findSession(Long sessionId) throws InstanceNotFoundException, SessionAlreadyStartedException;
     //FUNC-4 Comprar entradas
-    Purchase buyTickets(Long userId, Long sessionId, Integer numberTickets, String creditCardNumber) throws InstanceNotFoundException, PermissionException, SessionAlreadyStartedException, NotEnoughTicketsException;
+    Purchase buyTickets(Long userId, Long sessionId, Integer numberTickets, String creditCardNumber) throws InstanceNotFoundException, SessionAlreadyStartedException, NotEnoughTicketsException;
 
     //FUNC-5 Visualizar el historico de compras
     Block<Purchase> findPurchases(Long userId, int page, int size);

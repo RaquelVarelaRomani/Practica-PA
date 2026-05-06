@@ -87,7 +87,11 @@ public class CinemaServiceTest {
 
     //Crea un compra de un usuario
     private Purchase createPurchase(User user, Session session, int numberTickets, String creditCardNumber) {
-        session.setAvailableTickets(session.getAvailableTickets() - numberTickets);
+        try {
+            session.sellTickets(numberTickets);
+        } catch (NotEnoughTicketsException e) {
+            throw new IllegalStateException(e);
+        }
         sessionDao.save(session);
         return purchaseDao.save(new Purchase(LocalDateTime.now(), numberTickets, creditCardNumber, user, session));
     }
@@ -230,22 +234,18 @@ public class CinemaServiceTest {
     }
 
     @Test
-    public void testFindSessionWithPurchases() throws InstanceNotFoundException, SessionAlreadyStartedException {
-        //Sesión con compras ya realizadas
+    public void testFindSessionWithStoredAvailability() throws InstanceNotFoundException, SessionAlreadyStartedException {
+        //Sesión con disponibilidad almacenada en la propia entidad
         Movie movie = createMovie("Blade Runner");
         Room room = createRoom("Sala 3");
         Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
 
-        User user1 = createUser("user1");
-        User user2 = createUser("user2");
-
-        createPurchase(user1, session, 5, "1111222233334444");
-        createPurchase(user2, session, 7, "5555666677778888");
+        session.setAvailableTickets(88);
+        session = sessionDao.save(session);
 
         //Buscamos el detalle de la sesión
         SessionDetails sessionDetails = cinemaService.findSession(session.getId());
 
-        //100 - (5 + 7) = 88 disponibles
         assertEquals(session.getId(), sessionDetails.getSession().getId());
         assertEquals(88, sessionDetails.getAvailableTickets());
     }
@@ -257,8 +257,8 @@ public class CinemaServiceTest {
         Room room = createRoom("Sala 4");
         Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
 
-        User user = createUser("user3");
-        createPurchase(user, session, 100, "9999888877776666");
+        session.setAvailableTickets(0);
+        session = sessionDao.save(session);
 
         SessionDetails sessionDetails = cinemaService.findSession(session.getId());
 
@@ -286,7 +286,6 @@ public class CinemaServiceTest {
     //TESTS FUNC-4
     @Test
     public void testBuyTickets() throws Exception {
-        //Compra correcta
         User user = createUser("viewer1");
         Movie movie = createMovie("Matrix");
         Room room = createRoom("Sala 5");
@@ -294,15 +293,17 @@ public class CinemaServiceTest {
 
         Purchase purchase = cinemaService.buyTickets(user.getId(), session.getId(), 3, "1234567890123456");
 
-        assertNotNull(purchase.getId());
-        assertEquals(user.getId(), purchase.getUser().getId());
-        assertEquals(session.getId(), purchase.getSession().getId());
-        assertEquals(3, purchase.getNumberTickets());
-        assertEquals("1234567890123456", purchase.getCreditCardNumber());
-        assertFalse(purchase.isDelivered());
+        Purchase storedPurchase = purchaseDao.findById(purchase.getId()).get();
 
-        SessionDetails sessionDetails = cinemaService.findSession(session.getId());
-        assertEquals(97, sessionDetails.getAvailableTickets());
+        assertEquals(purchase.getId(), storedPurchase.getId());
+        assertEquals(user.getId(), storedPurchase.getUser().getId());
+        assertEquals(session.getId(), storedPurchase.getSession().getId());
+        assertEquals(3, storedPurchase.getNumberTickets());
+        assertEquals("1234567890123456", storedPurchase.getCreditCardNumber());
+        assertFalse(storedPurchase.isDelivered());
+
+        Session updatedSession = sessionDao.findById(session.getId()).get();
+        assertEquals(97, updatedSession.getAvailableTickets());
     }
 
     @Test
@@ -345,22 +346,11 @@ public class CinemaServiceTest {
         Room room = createRoom("Sala 8");
         Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
 
-        createPurchase(user, session, 99, "9999888877776666");
+        session.setAvailableTickets(1);
+        sessionDao.save(session);
 
         assertThrows(NotEnoughTicketsException.class,
                 () -> cinemaService.buyTickets(user.getId(), session.getId(), 2, "1234567890123456"));
-    }
-
-    @Test
-    public void testBuyTicketsTicketSellerCannotBuy() {
-        //Vendedor no puede comprar entradas
-        User ticketSeller = createTicketSeller("seller1");
-        Movie movie = createMovie("Expediente Warren");
-        Room room = createRoom("Sala 9");
-        Session session = createSession(movie, room, LocalDateTime.now().plusDays(1));
-
-        assertThrows(PermissionException.class,
-                () -> cinemaService.buyTickets(ticketSeller.getId(), session.getId(), 1, "1234567890123456"));
     }
 
     // TESTS FUNC-5

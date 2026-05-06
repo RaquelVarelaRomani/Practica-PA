@@ -121,7 +121,7 @@ public class CinemaController {
     @PostMapping("/buy")
     public PurchaseDto buyTickets(@RequestAttribute Long userId,
                                  @Validated @RequestBody TicketParamsDto params)
-            throws InstanceNotFoundException, PermissionException,
+            throws InstanceNotFoundException,
             SessionAlreadyStartedException, NotEnoughTicketsException {
 
         Purchase purchase = cinemaService.buyTickets(userId, params.getSessionId(),

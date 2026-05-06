@@ -93,7 +93,6 @@ public class CinemaServiceImpl implements CinemaService {
             throw new InstanceNotFoundException("project.entities.session", sessionId);
         }
 
-
         Session session = optionalSession.get();
         if(session.hasStarted()) {
             throw new SessionAlreadyStartedException();
@@ -105,13 +104,9 @@ public class CinemaServiceImpl implements CinemaService {
     //para FUNC-4 realizar una compra
     @Override
     @Transactional
-    public Purchase buyTickets (Long userId, Long sessionId, Integer numberTickets, String creditCardNumber) throws InstanceNotFoundException, PermissionException, SessionAlreadyStartedException, NotEnoughTicketsException {
+    public Purchase buyTickets (Long userId, Long sessionId, Integer numberTickets, String creditCardNumber) throws InstanceNotFoundException, SessionAlreadyStartedException, NotEnoughTicketsException {
 
         User user = permissionChecker.checkUser(userId);
-        //Si no es un cliente del cine no puede comprar
-        if (user.getRole() != User.RoleType.VIEWER) {
-            throw new PermissionException();
-        }
 
         Optional<Session> optionalSession = sessionDao.findById(sessionId);
         if (!optionalSession.isPresent()) {
@@ -119,20 +114,11 @@ public class CinemaServiceImpl implements CinemaService {
         }
 
         Session session = optionalSession.get();
-        if (!session.getStartTime().isAfter(LocalDateTime.now())) {
+        if (session.hasStarted()) {
             throw new SessionAlreadyStartedException();
         }
 
-        //Recuperamos las compras de la sesión
-        List<Purchase> purchases = purchaseDao.findBySessionId(sessionId);
-        //Calculamos las butacas disponibles
-        int soldTickets = purchases.stream().mapToInt(Purchase::getNumberTickets).sum();
-        int availableTickets = session.getRoom().getCapacity() - soldTickets;
-
-        //Si se intentan comprar más entradas de las que hay
-        if (availableTickets < numberTickets) {
-            throw new NotEnoughTicketsException();
-        }
+        session.sellTickets(numberTickets);
 
         Purchase purchase = new Purchase(LocalDateTime.now(), numberTickets, creditCardNumber, user, session);
         return purchaseDao.save(purchase);
@@ -175,7 +161,7 @@ public class CinemaServiceImpl implements CinemaService {
         }
 
         //Verificamos que la sesión no haya empezado
-        if (!purchase.getSession().getStartTime().isAfter(LocalDateTime.now())) {
+        if (purchase.getSession().hasStarted()) {
             throw new SessionAlreadyStartedException();
         }
 

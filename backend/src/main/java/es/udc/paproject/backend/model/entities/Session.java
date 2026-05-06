@@ -1,4 +1,5 @@
 package es.udc.paproject.backend.model.entities;
+import es.udc.paproject.backend.model.exceptions.NotEnoughTicketsException;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -56,5 +57,12 @@ public class Session {
     public void setVersion(Long version) {this.version = version;}
 
     public boolean hasStarted() {return !startTime.isAfter(LocalDateTime.now());}
+
+    public void sellTickets(int numberTickets) throws NotEnoughTicketsException {
+        if (availableTickets < numberTickets) {
+            throw new NotEnoughTicketsException();
+        }
+        availableTickets -= numberTickets;
+    }
 }
 
