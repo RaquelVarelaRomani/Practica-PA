@@ -136,16 +136,9 @@ public class CinemaServiceImpl implements CinemaService {
     //para FUNC-6 entregar las entradas de una compra
     @Override
     @Transactional
-    public void deliverTickets(Long userId, Long purchaseId, String creditCardNumber)
-            throws InstanceNotFoundException, PermissionException, SessionAlreadyStartedException,
+    public void deliverTickets(Long purchaseId, String creditCardNumber)
+            throws InstanceNotFoundException, SessionAlreadyStartedException,
             AlreadyDeliveredException, CreditCardDoesNotMatchException {
-
-        User user = permissionChecker.checkUser(userId);
-
-        //Solo el taquillero puede entregar entradas
-        if (user.getRole() != User.RoleType.TICKET_SELLER) {
-            throw new PermissionException();
-        }
 
         //Buscamos la compra
         Optional<Purchase> optionalPurchase = purchaseDao.findById(purchaseId);

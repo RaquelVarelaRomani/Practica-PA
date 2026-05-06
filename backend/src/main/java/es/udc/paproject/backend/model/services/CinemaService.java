@@ -22,7 +22,7 @@ public interface CinemaService {
     Block<Purchase> findPurchases(Long userId, int page, int size);
 
     //FUNC-6 Entregar las entradas de una compra
-    void deliverTickets(Long userId, Long purchaseId, String creditCardNumber)
-            throws InstanceNotFoundException, PermissionException, SessionAlreadyStartedException,
+    void deliverTickets(Long purchaseId, String creditCardNumber)
+            throws InstanceNotFoundException, SessionAlreadyStartedException,
             AlreadyDeliveredException, CreditCardDoesNotMatchException;
 }

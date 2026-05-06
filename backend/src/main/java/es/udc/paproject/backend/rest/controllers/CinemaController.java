@@ -141,13 +141,12 @@ public class CinemaController {
     }
 
     @PostMapping("/purchases/{purchaseId}/deliver")
-    public ResponseEntity<Void> deliverTickets(@RequestAttribute Long userId,
-                                               @PathVariable Long purchaseId,
+    public ResponseEntity<Void> deliverTickets(@PathVariable Long purchaseId,
                                                @Validated @RequestBody DeliverParamsDto params)
-            throws InstanceNotFoundException, PermissionException, SessionAlreadyStartedException,
+            throws InstanceNotFoundException, SessionAlreadyStartedException,
             AlreadyDeliveredException, CreditCardDoesNotMatchException {
 
-        cinemaService.deliverTickets(userId, purchaseId, params.getCreditCardNumber());
+        cinemaService.deliverTickets(purchaseId, params.getCreditCardNumber());
 
         return ResponseEntity.noContent().build();
     }
