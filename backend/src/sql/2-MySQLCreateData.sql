@@ -31,9 +31,9 @@ INSERT INTO Movie (title, summary, durationMinutes)
 VALUES ('Star Wars', 'La lucha entre el bien y el mal en una galaxia lejana.', 121);
 
 -- Sesiones de hoy:
--- Sesion 1: hoy a las 00:05 (pelicula 1, sala 1, 50 butacas disponibles)
+-- Sesion 1: hoy a las 00:05 (pelicula 1, sala 1, 45 butacas disponibles)
 INSERT INTO Session (movieId, roomId, startTime, price, availableTickets)
-VALUES (1, 1, DATE_ADD(DATE(NOW()), INTERVAL '0 00:05' DAY_MINUTE), 8.50, 50);
+VALUES (1, 1, DATE_ADD(DATE(NOW()), INTERVAL '0 00:05' DAY_MINUTE), 8.50, 45);
 -- Sesion 2: hoy a las 23:55 (pelicula 2, sala 2, 9 butacas disponibles)
 INSERT INTO Session (movieId, roomId, startTime, price, availableTickets)
 VALUES (2, 2, DATE_ADD(DATE(NOW()), INTERVAL '0 23:55' DAY_MINUTE), 7.00, 9);
