@@ -5,11 +5,14 @@ import Header from './Header';
 import Body from './Body';
 import Footer from './Footer';
 import users from '../../users';
+import catalog from '../../catalog';
+import {getToday} from '../../catalog/dateUtils';
 import backend from '../../../backend';
 
 const App = () => {
 
     const dispatch = useDispatch();
+    const today = getToday();
 
     useEffect(() => {
 
@@ -21,8 +24,16 @@ const App = () => {
             }
         }
 
+        const getBillboard = async () => {
+            const response = await backend.catalogService.getBillboard(today);
+            if (response.ok) {
+                dispatch(catalog.actions.getBillboardCompleted(response.payload));
+            }
+        }
+
         tryLoginFromServiceToken();
-    
+        getBillboard();
+
     }, [dispatch]);
 
     return (
