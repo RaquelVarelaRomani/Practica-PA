@@ -34,7 +34,7 @@ const App = () => {
         tryLoginFromServiceToken();
         getBillboard();
 
-    }, [dispatch]);
+    }, [dispatch, today]);
 
     return (
         <div className="d-flex flex-column min-vh-100">
