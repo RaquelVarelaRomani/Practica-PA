@@ -5,3 +5,6 @@ export const getBillboard = async date =>
 
 export const findMovieById = async id =>
     await appFetch('GET', `/cinema/movies/${id}`);
+
+export const findSessionById = async id =>
+    await appFetch('GET', `/cinema/sessions/${id}`);
