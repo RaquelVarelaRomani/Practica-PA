@@ -6,7 +6,7 @@ import AppGlobalComponents from './AppGlobalComponents';
 import Home from './Home';
 import {Login, SignUp, UpdateProfile, ChangePassword, Logout} from '../../users';
 import users from '../../users';
-import {MovieDetails} from '../../catalog';
+import {MovieDetails, SessionDetails} from '../../catalog';
 
 const Body = () => {
 
@@ -19,6 +19,7 @@ const Body = () => {
             <Routes>
                 <Route path="/*" element={<Home/>}/>
                 <Route path="/catalog/movies/:movieId" element={<MovieDetails/>}/>
+                <Route path="/catalog/sessions/:id" element={<SessionDetails/>}/>
                 {loggedIn && <Route path="/users/update-profile" element={<UpdateProfile/>}/>}
                 {loggedIn && <Route path="/users/change-password" element={<ChangePassword/>}/>}
                 {loggedIn && <Route path="/users/logout" element={<Logout/>}/>}
