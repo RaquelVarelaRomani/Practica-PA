@@ -6,12 +6,16 @@ import ListGroup from 'react-bootstrap/ListGroup';
 
 import backend from '../../../backend';
 import {BackLink, Errors} from '../../common';
+import users from '../../users';
+import {useSelector} from 'react-redux';
+import BuyTicketsForm from './BuyTicketsForm';
 import MovieLink from './MovieLink';
 
 const SessionDetails = () => {
 
     const [session, setSession] = useState(null);
     const [backendErrors, setBackendErrors] = useState(null);
+    const isViewer = useSelector(users.selectors.isViewer);
     const {id} = useParams();
     const sessionId = Number(id);
 
@@ -71,6 +75,9 @@ const SessionDetails = () => {
                         </ListGroup.Item>
                     </ListGroup>
                 </Card>
+            }
+            {session && isViewer && session.availableTickets > 0 &&
+                <BuyTicketsForm sessionId={session.id} availableTickets={session.availableTickets}/>
             }
         </>
     );
