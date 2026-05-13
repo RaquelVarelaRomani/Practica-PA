@@ -8,3 +8,6 @@ export const findMovieById = async id =>
 
 export const findSessionById = async id =>
     await appFetch('GET', `/cinema/sessions/${id}`);
+
+export const buyTickets = async (sessionId, numberTickets, creditCardNumber) =>
+    await appFetch('POST', '/cinema/buy', {sessionId, numberTickets, creditCardNumber});
