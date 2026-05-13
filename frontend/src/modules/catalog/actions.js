@@ -10,3 +10,7 @@ export const clearBillboard = billboardDate => ({
     billboardDate
 });
 
+export const buyTicketsCompleted = purchaseId => ({
+    type: actionTypes.BUY_TICKETS_COMPLETED,
+    purchaseId
+})

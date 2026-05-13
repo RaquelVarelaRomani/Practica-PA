@@ -6,3 +6,5 @@ export const getMovies = state =>
 export const getBillboardDate = state =>
     getModuleState(state).billboardDate;
 
+export const getLastPurchaseId = state =>
+    getModuleState(state).lastPurchaseId;
