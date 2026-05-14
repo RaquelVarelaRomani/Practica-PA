@@ -11,6 +11,7 @@ import users from '../../users';
 const Header = () => {
 
     const userName = useSelector(users.selectors.getUserName);
+    const isViewer = useSelector(users.selectors.isViewer);
 
     return (
 
@@ -22,6 +23,11 @@ const Header = () => {
 
                     {userName ? (
                         <Nav className="ms-auto">
+                            {isViewer &&
+                                <Nav.Link as={Link} to="/catalog/find-purchases">
+                                    <FormattedMessage id="project.catalog.Header.purchases"/>
+                                </Nav.Link>
+                            }
                             <NavDropdown title={<><span className="fa-solid fa-user"></span>&nbsp;{userName}</>} align="end" id="user-dropdown">
                                 <NavDropdown.Item as={Link} to="/users/update-profile">
                                     <FormattedMessage id="project.users.UpdateProfile.title"/>

@@ -5,7 +5,9 @@ import {getToday} from './dateUtils';
 
 const initialState = {
     movies: null,
-    billboardDate: getToday(), lastPurchaseId: null
+    billboardDate: getToday(),
+    lastPurchaseId: null,
+    purchaseSearch: null
 };
 
 const movies = (state = initialState.movies, action) => {
@@ -37,10 +39,28 @@ const lastPurchaseId = (state = initialState.lastPurchaseId, action) => {
     }
 }
 
+const purchaseSearch = (state = initialState.purchaseSearch, action) => {
+
+    switch (action.type) {
+
+        case actionTypes.FIND_PURCHASES_COMPLETED:
+            return action.purchaseSearch;
+
+        case actionTypes.CLEAR_PURCHASE_SEARCH:
+            return initialState.purchaseSearch;
+
+        default:
+            return state;
+
+    }
+
+}
+
 const reducer = combineReducers({
     movies,
     billboardDate,
-    lastPurchaseId
+    lastPurchaseId,
+    purchaseSearch
 });
 
 export default reducer;
