@@ -1,5 +1,5 @@
 import {useSelector} from 'react-redux';
-import {Link} from 'react-router';
+import {NavLink} from 'react-router';
 import {FormattedMessage} from 'react-intl';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
@@ -14,48 +14,108 @@ const Header = () => {
     const isViewer = useSelector(users.selectors.isViewer);
     const isTicketSeller = useSelector(users.selectors.isTicketSeller);
 
+    const colors = {
+        azulPrincipal: '#1A36FF',
+        celesteCinepa: '#33B3F8',
+        blancoLimpio: '#FFFFFF'
+    };
+    const getLinkStyle = (isActive) => ({
+        color: colors.blancoLimpio,
+        fontWeight: isActive ? '700' : '400',
+        fontSize: isActive ? '1.15rem' : '1rem',
+        transition: 'all 0.2s ease-in-out',
+        display: 'inline-block'
+    });
     return (
 
-        <Navbar bg="light" expand="lg" className="border-bottom">
+        <Navbar expand="lg" className="border-bottom" style={{ backgroundColor: colors.azulPrincipal, borderColor: colors.celesteCinepa }}>
             <Container fluid>
-                <Navbar.Brand as={Link} to="/">PA Project</Navbar.Brand>
-                <Navbar.Toggle aria-controls="navbarSupportedContent" className="mb-3"/>
+                <Navbar.Brand as={NavLink} to="/" style={{ color: colors.blancoLimpio, fontWeight: 'bold' }}>
+                    CinePA
+                </Navbar.Brand>
+                <Navbar.Toggle aria-controls="navbarSupportedContent" className="mb-3" style={{ filter: 'invert(1)' }}/>
                 <Navbar.Collapse id="navbarSupportedContent">
 
                     {userName ? (
-                        <Nav className="ms-auto">
+                        <Nav className="ms-auto" style={{ alignItems: 'center' }}>
+                            <NavLink
+                                to="/"
+                                end
+                                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''} link-hover-underline`}
+                                style={({ isActive }) => getLinkStyle(isActive)}
+                            >
+                                <FormattedMessage id="project.catalog.Billboard.title"/>
+                            </NavLink>
+
                             {isViewer &&
-                                <Nav.Link as={Link} to="/catalog/find-purchases">
+                                <NavLink
+                                    to="/catalog/find-purchases"
+                                    className={({ isActive }) => {
+                                        const inResultPage = window.location.pathname === '/catalog/find-purchases-result';
+                                        return `nav-link ${isActive || inResultPage ? 'active' : ''} link-hover-underline`;
+                                    }}
+                                    style={({ isActive }) => {
+                                        const inResultPage = window.location.pathname === '/catalog/find-purchases-result';
+                                        return getLinkStyle(isActive || inResultPage);
+                                    }}
+                                >
                                     <FormattedMessage id="project.catalog.Header.purchases"/>
-                                </Nav.Link>
+                                </NavLink>
                             }
                             {isTicketSeller &&
-                                <Nav.Link as={Link} to="/catalog/deliver-tickets">
+                                <NavLink
+                                    to="/catalog/deliver-tickets"
+                                    className={({ isActive }) => `nav-link ${isActive ? 'active' : ''} link-hover-underline`}
+                                    style={({ isActive }) => getLinkStyle(isActive)}
+                                >
                                     <FormattedMessage id="project.catalog.Header.deliverTickets"/>
-                                </Nav.Link>
+                                </NavLink>
                             }
-                            <NavDropdown title={<><span className="fa-solid fa-user"></span>&nbsp;{userName}</>} align="end" id="user-dropdown">
-                                <NavDropdown.Item as={Link} to="/users/update-profile">
+                            <NavDropdown
+                                title={<><span className="fa-solid fa-user" style={{ color: colors.blancoLimpio }}></span>&nbsp;<span style={{ color: colors.blancoLimpio }}>{userName}</span></>}
+                                align="end"
+                                id="user-dropdown"
+                            >
+                                <NavDropdown.Item as={NavLink} to="/users/update-profile">
                                     <FormattedMessage id="project.users.UpdateProfile.title"/>
                                 </NavDropdown.Item>
-                                <NavDropdown.Item as={Link} to="/users/change-password">
+                                <NavDropdown.Item as={NavLink} to="/users/change-password">
                                     <FormattedMessage id="project.users.ChangePassword.title"/>
                                 </NavDropdown.Item>
                                 <NavDropdown.Divider />
-                                <NavDropdown.Item as={Link} to="/users/logout">
+                                <NavDropdown.Item as={NavLink} to="/users/logout">
                                     <FormattedMessage id="project.app.Header.logout"/>
                                 </NavDropdown.Item>
                             </NavDropdown>
                         </Nav>
                     ) : (
-                        <Nav className="ms-auto">
-                            <Nav.Link as={Link} to="/users/login">
+                        <Nav className="ms-auto" style={{ alignItems: 'center' }}>
+                            <NavLink
+                                to="/"
+                                end
+                                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''} link-hover-underline`}
+                                style={({ isActive }) => getLinkStyle(isActive)}
+                            >
+                                <FormattedMessage id="project.catalog.Billboard.title"/>
+                            </NavLink>
+
+                            <NavLink
+                                to="/users/login"
+                                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''} link-hover-underline`}
+                                style={({ isActive }) => getLinkStyle(isActive)}
+                            >
                                 <FormattedMessage id="project.users.Login.title"/>
-                            </Nav.Link>
+                            </NavLink>
                         </Nav>
                     )}
                 </Navbar.Collapse>
             </Container>
+            <style>{`
+                .link-hover-underline:hover {
+                    text-decoration: underline !important;
+                    color: ${colors.blancoLimpio} !important;
+                }
+            `}</style>
         </Navbar>
 
     );

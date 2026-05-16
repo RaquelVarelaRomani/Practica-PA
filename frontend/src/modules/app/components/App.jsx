@@ -37,8 +37,7 @@ const App = () => {
     }, [dispatch, today]);
 
     return (
-        <div className="d-flex flex-column min-vh-100">
-            <Header/>
+        <div className="d-flex flex-column min-vh-100" style={{ backgroundColor: '#F0F4FF' }}>            <Header/>
             <Body/>
             <Footer/>
         </div>

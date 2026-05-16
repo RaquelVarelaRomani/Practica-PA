@@ -15,7 +15,6 @@ const Body = () => {
     const isTicketSeller = useSelector(users.selectors.isTicketSeller);
     
    return (
-
        <Container className="my-4 justify-content-center flex-grow-1">
             <AppGlobalComponents/>
             <Routes>

@@ -1,6 +1,6 @@
 export default {
 
-    'project.app.Footer.text': 'PA Project - Area de Enxeñaría Telemática - Universidade da Coruña',
+    'project.app.Footer.text': 'CinePA - Proxecto de Kevin, Lara e Raquel para a UDC',
     'project.app.Header.home': 'Inicio',
     'project.app.Header.logout': 'Saír',
     'project.app.Home.welcome': 'Contido da páxina principal de PA Project!',
