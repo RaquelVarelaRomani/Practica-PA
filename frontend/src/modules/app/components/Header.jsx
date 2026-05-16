@@ -14,35 +14,23 @@ const Header = () => {
     const isViewer = useSelector(users.selectors.isViewer);
     const isTicketSeller = useSelector(users.selectors.isTicketSeller);
 
-    const colors = {
-        azulPrincipal: '#1A36FF',
-        celesteCinepa: '#33B3F8',
-        blancoLimpio: '#FFFFFF'
-    };
-    const getLinkStyle = (isActive) => ({
-        color: colors.blancoLimpio,
-        fontWeight: isActive ? '700' : '400',
-        fontSize: isActive ? '1.15rem' : '1rem',
-        transition: 'all 0.2s ease-in-out',
-        display: 'inline-block'
-    });
+    const inResultPage = window.location.pathname === '/catalog/find-purchases-result';
     return (
 
-        <Navbar expand="lg" className="border-bottom" style={{ backgroundColor: colors.azulPrincipal, borderColor: colors.celesteCinepa }}>
+        <Navbar expand="lg" bg="primary" data-bs-theme="dark" className="border-bottom">
             <Container fluid>
-                <Navbar.Brand as={NavLink} to="/" style={{ color: colors.blancoLimpio, fontWeight: 'bold' }}>
+                <Navbar.Brand as={NavLink} to="/" className="fw-bold text-white">
                     CinePA
                 </Navbar.Brand>
-                <Navbar.Toggle aria-controls="navbarSupportedContent" className="mb-3" style={{ filter: 'invert(1)' }}/>
+                <Navbar.Toggle aria-controls="navbarSupportedContent" className="mb-3"/>
                 <Navbar.Collapse id="navbarSupportedContent">
 
                     {userName ? (
-                        <Nav className="ms-auto" style={{ alignItems: 'center' }}>
+                        <Nav className="ms-auto align-items-center">
                             <NavLink
                                 to="/"
                                 end
-                                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''} link-hover-underline`}
-                                style={({ isActive }) => getLinkStyle(isActive)}
+                                className={({isActive}) => `nav-link text-white ${isActive ? 'active fw-bold' : ''}`}
                             >
                                 <FormattedMessage id="project.catalog.Billboard.title"/>
                             </NavLink>
@@ -50,14 +38,7 @@ const Header = () => {
                             {isViewer &&
                                 <NavLink
                                     to="/catalog/find-purchases"
-                                    className={({ isActive }) => {
-                                        const inResultPage = window.location.pathname === '/catalog/find-purchases-result';
-                                        return `nav-link ${isActive || inResultPage ? 'active' : ''} link-hover-underline`;
-                                    }}
-                                    style={({ isActive }) => {
-                                        const inResultPage = window.location.pathname === '/catalog/find-purchases-result';
-                                        return getLinkStyle(isActive || inResultPage);
-                                    }}
+                                    className={({isActive}) => `nav-link text-white ${isActive || inResultPage ? 'active fw-bold' : ''}`}
                                 >
                                     <FormattedMessage id="project.catalog.Header.purchases"/>
                                 </NavLink>
@@ -65,14 +46,18 @@ const Header = () => {
                             {isTicketSeller &&
                                 <NavLink
                                     to="/catalog/deliver-tickets"
-                                    className={({ isActive }) => `nav-link ${isActive ? 'active' : ''} link-hover-underline`}
-                                    style={({ isActive }) => getLinkStyle(isActive)}
+                                    className={({isActive}) => `nav-link text-white ${isActive ? 'active fw-bold' : ''}`}
                                 >
                                     <FormattedMessage id="project.catalog.Header.deliverTickets"/>
                                 </NavLink>
                             }
                             <NavDropdown
-                                title={<><span className="fa-solid fa-user" style={{ color: colors.blancoLimpio }}></span>&nbsp;<span style={{ color: colors.blancoLimpio }}>{userName}</span></>}
+                                title={
+                                    <span className="d-inline-flex align-items-center gap-2 text-white">
+                                        <i className="fa-solid fa-user"></i>
+                                        <span>{userName}</span>
+                                    </span>
+                                }
                                 align="end"
                                 id="user-dropdown"
                             >
@@ -89,20 +74,18 @@ const Header = () => {
                             </NavDropdown>
                         </Nav>
                     ) : (
-                        <Nav className="ms-auto" style={{ alignItems: 'center' }}>
+                        <Nav className="ms-auto align-items-center">
                             <NavLink
                                 to="/"
                                 end
-                                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''} link-hover-underline`}
-                                style={({ isActive }) => getLinkStyle(isActive)}
+                                className={({isActive}) => `nav-link text-white ${isActive ? 'active fw-bold' : ''}`}
                             >
                                 <FormattedMessage id="project.catalog.Billboard.title"/>
                             </NavLink>
 
                             <NavLink
                                 to="/users/login"
-                                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''} link-hover-underline`}
-                                style={({ isActive }) => getLinkStyle(isActive)}
+                                className={({isActive}) => `nav-link text-white ${isActive ? 'active fw-bold' : ''}`}
                             >
                                 <FormattedMessage id="project.users.Login.title"/>
                             </NavLink>
@@ -110,12 +93,6 @@ const Header = () => {
                     )}
                 </Navbar.Collapse>
             </Container>
-            <style>{`
-                .link-hover-underline:hover {
-                    text-decoration: underline !important;
-                    color: ${colors.blancoLimpio} !important;
-                }
-            `}</style>
         </Navbar>
 
     );
