@@ -26,11 +26,11 @@ const Movies = ({movies}) => {
             <Row className="g-4 justify-content-center">
                 {movies.map(movie =>
                     <Col key={movie.id} xs={12} sm={6} md={4} className="d-flex">
-                        <Card className="w-100 border border-light shadow-sm" style={{ borderRadius: '16px', backgroundColor: '#FFFFFF' }}>
+                        <Card className="w-100 border border-light shadow-sm rounded-4 bg-white">
                             <Card.Body className="p-4 text-center d-flex flex-column justify-content-between">
 
                                 <div className="mb-4">
-                                    <h5 style={{ fontWeight: '700', fontSize: '1.3rem', letterSpacing: '-0.3px', minHeight: '3rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <h5 className="fw-bold fs-5 d-flex align-items-center justify-content-center mb-0">
                                         <MovieLink id={movie.id} title={movie.title} />
                                     </h5>
                                 </div>
