@@ -3,7 +3,7 @@ export default {
     'project.app.Footer.text': 'CinePA - A project by Kevin, Lara and Raquel for the UDC',
     'project.app.Header.home': 'Home',
     'project.app.Header.logout': 'Logout',
-    'project.app.Home.welcome': 'PA Project main page content!',
+    'project.app.Home.welcome': 'CinePA main page content!',
 
     'project.common.ErrorDialog.title': 'Error',
 
