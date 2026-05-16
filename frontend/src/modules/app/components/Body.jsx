@@ -6,12 +6,13 @@ import AppGlobalComponents from './AppGlobalComponents';
 import Home from './Home';
 import {Login, SignUp, UpdateProfile, ChangePassword, Logout} from '../../users';
 import users from '../../users';
-import {FindPurchases, FindPurchasesResult, MovieDetails, PurchaseCompleted, SessionDetails} from '../../catalog';
+import {DeliverTickets, FindPurchases, FindPurchasesResult, MovieDetails, PurchaseCompleted, SessionDetails} from '../../catalog';
 
 const Body = () => {
 
     const loggedIn = useSelector(users.selectors.isLoggedIn);
     const isViewer = useSelector(users.selectors.isViewer);
+    const isTicketSeller = useSelector(users.selectors.isTicketSeller);
     
    return (
 
@@ -24,6 +25,7 @@ const Body = () => {
                 {loggedIn && <Route path = "/catalog/purchase-completed" element = {<PurchaseCompleted/>}/>}
                 {isViewer && <Route path="/catalog/find-purchases" element={<FindPurchases/>}/>}
                 {isViewer && <Route path="/catalog/find-purchases-result" element={<FindPurchasesResult/>}/>}
+                {isTicketSeller && <Route path="/catalog/deliver-tickets" element={<DeliverTickets/>}/>}
                 {loggedIn && <Route path="/users/update-profile" element={<UpdateProfile/>}/>}
                 {loggedIn && <Route path="/users/change-password" element={<ChangePassword/>}/>}
                 {loggedIn && <Route path="/users/logout" element={<Logout/>}/>}

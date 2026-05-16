@@ -50,7 +50,11 @@ export default {
     'project.catalog.Billboard.noMovies': 'No movies found',
     'project.catalog.Billboard.title': 'Billboard',
     'project.catalog.BuyTicketsForm.title': 'Buy tickets',
+    'project.catalog.DeliverTickets.submit': 'Deliver tickets',
+    'project.catalog.DeliverTickets.success': 'Tickets delivered',
+    'project.catalog.DeliverTickets.title': 'Deliver tickets',
     'project.catalog.FindPurchasesResult.noPurchases': 'No purchases found',
+    'project.catalog.Header.deliverTickets': 'Deliver tickets',
     'project.catalog.Header.purchases': 'Purchases',
     'project.catalog.PurchaseCompleted.purchaseGenerated': 'Purchase generated with identifier',
 

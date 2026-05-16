@@ -14,3 +14,6 @@ export const buyTickets = async (sessionId, numberTickets, creditCardNumber) =>
 
 export const findPurchases = async ({page}) =>
     await appFetch('GET', `/cinema/purchases?page=${page}`);
+
+export const deliverTickets = async (purchaseId, creditCardNumber) =>
+    await appFetch('POST', `/cinema/purchases/${purchaseId}/deliver`, {creditCardNumber});

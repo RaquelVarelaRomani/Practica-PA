@@ -50,7 +50,11 @@ export default {
     'project.catalog.Billboard.noMovies': 'Non se atoparon películas',
     'project.catalog.Billboard.title': 'Carteleira',
     'project.catalog.BuyTicketsForm.title': 'Comprar entradas',
+    'project.catalog.DeliverTickets.submit': 'Entregar entradas',
+    'project.catalog.DeliverTickets.success': 'Entradas entregadas',
+    'project.catalog.DeliverTickets.title': 'Entregar entradas',
     'project.catalog.FindPurchasesResult.noPurchases': 'Non se atoparon compras',
+    'project.catalog.Header.deliverTickets': 'Entregar entradas',
     'project.catalog.Header.purchases': 'Compras',
     'project.catalog.PurchaseCompleted.purchaseGenerated': 'Compra xerada con identificador',
 

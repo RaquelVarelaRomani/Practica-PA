@@ -15,3 +15,5 @@ export const getRole = state =>
 export const isViewer = state =>
     getRole(state) === 'VIEWER';
 
+export const isTicketSeller = state =>
+    getRole(state) === 'TICKET_SELLER';

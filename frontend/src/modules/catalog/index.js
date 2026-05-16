@@ -4,6 +4,7 @@ import reducer from './reducer';
 import * as selectors from './selectors';
 
 export {default as Billboard} from './components/Billboard';
+export {default as DeliverTickets} from './components/DeliverTickets'
 export {default as FindPurchases} from './components/FindPurchases';
 export {default as FindPurchasesResult} from './components/FindPurchasesResult';
 export {default as MovieDetails} from './components/MovieDetails';
