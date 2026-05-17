@@ -77,7 +77,7 @@ const SessionDetails = () => {
                 </Card>
             }
             {session && isViewer && session.availableTickets > 0 &&
-                <BuyTicketsForm sessionId={session.id} availableTickets={session.availableTickets}/>
+                <BuyTicketsForm sessionId={session.id}/>
             }
         </>
     );

@@ -12,7 +12,7 @@ import backend from '../../../backend';
 import {Errors} from '../../common';
 import * as actions from '../actions';
 
-const BuyTicketsForm = ({sessionId, availableTickets}) => {
+const BuyTicketsForm = ({sessionId}) => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -60,7 +60,7 @@ const BuyTicketsForm = ({sessionId, availableTickets}) => {
                                               autoFocus
                                               required
                                               min="1"
-                                              max={Math.min(10, availableTickets)}/>
+                                              max="10"/>
                                 <Form.Control.Feedback type="invalid">
                                     <FormattedMessage id="project.global.validator.incorrectNumberTickets"/>
                                 </Form.Control.Feedback>
