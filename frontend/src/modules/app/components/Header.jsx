@@ -14,7 +14,6 @@ const Header = () => {
     const isViewer = useSelector(users.selectors.isViewer);
     const isTicketSeller = useSelector(users.selectors.isTicketSeller);
 
-    const inResultPage = window.location.pathname === '/catalog/find-purchases-result';
     return (
 
         <Navbar expand="lg" bg="primary" data-bs-theme="dark" className="border-bottom">
@@ -38,7 +37,7 @@ const Header = () => {
                             {isViewer &&
                                 <NavLink
                                     to="/catalog/find-purchases"
-                                    className={({isActive}) => `nav-link text-white ${isActive || inResultPage ? 'active fw-bold' : ''}`}
+                                    className={({isActive}) => `nav-link text-white ${isActive ? 'active fw-bold' : ''}`}
                                 >
                                     <FormattedMessage id="project.catalog.Header.purchases"/>
                                 </NavLink>

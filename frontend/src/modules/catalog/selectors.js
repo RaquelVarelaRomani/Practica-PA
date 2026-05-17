@@ -8,6 +8,3 @@ export const getBillboardDate = state =>
 
 export const getLastPurchaseId = state =>
     getModuleState(state).lastPurchaseId;
-
-export const getPurchaseSearch = state =>
-    getModuleState(state).purchaseSearch;
