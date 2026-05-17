@@ -7,7 +7,7 @@ const BackLink = () => {
     
     return (
 
-        <a onClick={() => navigate(-1)} href="#">
+        <a onClick={() => navigate(-1)} href="#" className="text-decoration-none">
             <FormattedMessage id='project.global.buttons.back'/>
         </a>
 

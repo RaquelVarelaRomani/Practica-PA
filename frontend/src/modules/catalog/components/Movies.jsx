@@ -37,7 +37,7 @@ const Movies = ({movies}) => {
 
                                 <div className="d-flex flex-wrap gap-2 justify-content-center align-items-center">
                                     {movie.sessions.map((session) =>
-                                        <div key={session.id} className="session-pill-container">
+                                        <div key={session.id}>
                                             <SessionLink session={session}/>
                                         </div>
                                     )}

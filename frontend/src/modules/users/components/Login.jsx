@@ -53,7 +53,7 @@ const Login = () => {
     return (
         <div className="col-md-10 mx-auto">
             <p className="text-center">
-                <Link to="/users/signup">
+                <Link to="/users/signup" className="text-decoration-none">
                     <FormattedMessage id="project.users.SignUp.title"/>
                 </Link>
             </p>
