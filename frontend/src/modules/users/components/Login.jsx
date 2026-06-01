@@ -98,7 +98,7 @@ const Login = () => {
                         </Form.Group>
                         <Form.Group as={Row}>
                             <Col md={{ span: 4, offset: 3 }}>
-                                <Button type="submit">
+                                <Button id="login-submit" type="submit">
                                     <FormattedMessage id="project.users.Login.title"/>
                                 </Button>
                             </Col>

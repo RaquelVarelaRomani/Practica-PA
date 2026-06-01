@@ -20,6 +20,14 @@ INSERT INTO User (userName, password, firstName, lastName, email, role)
 VALUES ('ticketseller', '$2a$10$v.js2jCaX3xoKvkR6E2pbugMmZDBPlCAz2gA7EOIZhbkvsPFew/5u',
         'Ticket', 'Seller', 'ticketseller@udc.es', 'TICKET_SELLER');
 
+-- Usuarios de pruebas e2e: testviewer (VIEWER) y testticketseller (TICKET_SELLER), password "pa2526"
+INSERT INTO User (userName, password, firstName, lastName, email, role)
+VALUES ('testviewer', '$2a$10$v.js2jCaX3xoKvkR6E2pbugMmZDBPlCAz2gA7EOIZhbkvsPFew/5u',
+        'Test', 'Viewer', 'testviewer@udc.es', 'VIEWER');
+INSERT INTO User (userName, password, firstName, lastName, email, role)
+VALUES ('testticketseller', '$2a$10$v.js2jCaX3xoKvkR6E2pbugMmZDBPlCAz2gA7EOIZhbkvsPFew/5u',
+        'Test', 'Seller', 'testticketseller@udc.es', 'TICKET_SELLER');
+
 -- Salas: una con 9 butacas y otra con mas de 10
 INSERT INTO Room (name, capacity) VALUES ('Sala 1', 50);
 INSERT INTO Room (name, capacity) VALUES ('Sala 2', 9);
@@ -70,6 +78,10 @@ VALUES (2, 1, DATE_ADD(DATE(NOW()), INTERVAL '6 18:00' DAY_MINUTE), 7.00, 50);
 INSERT INTO Session (movieId, roomId, startTime, price, availableTickets)
 VALUES (1, 2, DATE_ADD(DATE(NOW()), INTERVAL '6 21:00' DAY_MINUTE), 8.50, 9);
 
+-- Sesion e2e: manana a las 01:00 (pelicula 1, sala 1; 50 - 2 compradas = 48 butacas libres) -> sessionId 15
+INSERT INTO Session (movieId, roomId, startTime, price, availableTickets)
+VALUES (1, 1, DATE_ADD(DATE(NOW()), INTERVAL '1 01:00' DAY_MINUTE), 8.50, 48);
+
 -- 2 compras asociadas a la sesion 1 (hoy a las 00:05, sala 1 con 50 butacas)
 -- Compra del viewer: 3 entradas
 INSERT INTO Purchase (purchaseDate, numberTickets, creditCardNumber, delivered, userId, sessionId)
@@ -78,3 +90,7 @@ VALUES (DATE_ADD(DATE(NOW()), INTERVAL '0 00:01' DAY_MINUTE), 3, '12345678901234
 INSERT INTO Purchase (purchaseDate, numberTickets, creditCardNumber, delivered, userId, sessionId)
 VALUES (DATE_ADD(DATE(NOW()), INTERVAL '0 00:02' DAY_MINUTE), 2, '1234567890123456', false, 1, 1);
 -- Butacas disponibles sesion 1: 50 - 3 - 2 = 45
+
+-- Compra del testviewer (userId 3) para la sesion e2e de manana 01:00 (sessionId 15): 2 entradas
+INSERT INTO Purchase (purchaseDate, numberTickets, creditCardNumber, delivered, userId, sessionId)
+VALUES (DATE_ADD(DATE(NOW()), INTERVAL '0 00:03' DAY_MINUTE), 2, '1234567890123456', false, 3, 15);

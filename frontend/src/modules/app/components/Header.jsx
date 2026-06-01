@@ -83,6 +83,7 @@ const Header = () => {
                             </NavLink>
 
                             <NavLink
+                                id="loginLink"
                                 to="/users/login"
                                 className={({isActive}) => `nav-link text-white ${isActive ? 'active fw-bold' : ''}`}
                             >
