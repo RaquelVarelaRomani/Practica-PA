@@ -43,35 +43,47 @@ const SessionDetails = () => {
             {session &&
                 <Card className="text-center mt-3">
                     <Card.Body>
-                        <Card.Title>
+                        <Card.Title id="movieTitle">
                             <MovieLink id={session.movieId} title={session.movieTitle}/>
                         </Card.Title>
                     </Card.Body>
                     <ListGroup variant="flush">
                         <ListGroup.Item>
                             <FormattedMessage id="project.global.fields.duration"/>:{' '}
-                            {session.durationMinutes}{' '}
-                            <FormattedMessage id="project.global.fields.minutes"/>
+                            <span id="runtime">
+                                {session.durationMinutes}{' '}
+                                <FormattedMessage id="project.global.fields.minutes"/>
+                            </span>
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <FormattedMessage id="project.global.fields.price"/>:{' '}
-                            <FormattedNumber value={session.price} style="currency" currency="EUR"/>
+                            <span id="price">
+                                <FormattedNumber value={session.price} style="currency" currency="EUR"/>
+                            </span>
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <FormattedMessage id="project.global.fields.date"/>:{' '}
-                            <FormattedDate value={new Date(session.startTime)}/>
+                            <span id="date">
+                                <FormattedDate value={new Date(session.startTime)}/>
+                            </span>
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <FormattedMessage id="project.global.fields.time"/>:{' '}
-                            <FormattedTime value={new Date(session.startTime)}/>
+                            <span id="time">
+                                <FormattedTime value={new Date(session.startTime)}/>
+                            </span>
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <FormattedMessage id="project.global.fields.room"/>:{' '}
-                            {session.roomName}
+                            <span id="room">
+                                {session.roomName}
+                            </span>
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <FormattedMessage id="project.global.fields.availableTickets"/>:{' '}
-                            {session.availableTickets}
+                            <span id="availableTickets">
+                                {session.availableTickets}
+                            </span>
                         </ListGroup.Item>
                     </ListGroup>
                 </Card>
