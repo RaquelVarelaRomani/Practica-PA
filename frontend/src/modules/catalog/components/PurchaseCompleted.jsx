@@ -12,7 +12,7 @@ const PurchaseCompleted = () => {
     return (
         <Alert variant="success">
             <FormattedMessage id="project.catalog.PurchaseCompleted.purchaseGenerated"/>:{' '}
-            {purchaseId}
+            <span id="purchaseId">{purchaseId}</span>
         </Alert>
     );
 }

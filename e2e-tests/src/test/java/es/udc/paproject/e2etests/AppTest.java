@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Duration;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,8 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class AppTest {
+
+    private static final String CREDIT_CARD = "1234567890123456";
 
     WebDriver driver;
 
@@ -61,6 +64,37 @@ public class AppTest {
 
         // Incluye el formulario para comprar entradas
         assertTrue(driver.findElement(By.id("numberTickets")).isDisplayed());
+    }
+
+    @Test
+    public void testBuyTickets() {
+
+        login("testviewer", "pa2526");
+
+        // Acceder a la informacion detallada de la sesion e2e del script (sessionId 15)
+        driver.get("http://localhost:5173/catalog/sessions/15");
+
+        // Guardar el nombre de la pelicula
+        String movieTitle = driver.findElement(By.id("movieTitle")).getText();
+
+        // Rellenar el formulario para comprar dos entradas
+        WebElement numberTickets = driver.findElement(By.id("numberTickets"));
+        numberTickets.clear();
+        numberTickets.sendKeys("2");
+        driver.findElement(By.id("creditCardNumber")).sendKeys(CREDIT_CARD);
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+
+        // Guardar el identificador de la compra generada
+        String purchaseId = driver.findElement(By.id("purchaseId")).getText();
+
+        // Ver las compras del usuario
+        driver.findElement(By.cssSelector("a[href='/catalog/find-purchases']")).click();
+
+        // La primera compra coincide con el identificador y la pelicula guardados
+        List<WebElement> cells = driver.findElement(By.cssSelector("table tbody tr"))
+            .findElements(By.tagName("td"));
+        assertEquals(purchaseId, cells.get(1).getText());
+        assertEquals(movieTitle, cells.get(2).getText());
     }
 
     private void login(String userName, String password) {
