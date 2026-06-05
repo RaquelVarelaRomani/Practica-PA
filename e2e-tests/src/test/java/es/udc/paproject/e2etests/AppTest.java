@@ -97,6 +97,34 @@ public class AppTest {
         assertEquals(movieTitle, cells.get(2).getText());
     }
 
+    @Test
+    public void testDeliverTickets() {
+        login("testticketseller", "pa2526");
+
+        // Abrir el formulario para entregar las entradas de una compra
+        driver.findElement(By.cssSelector("a[href='/catalog/deliver-tickets']")).click();
+
+        // Entregar la compra e2e del script (purchaseId 3) -> mensaje de éxito
+        fillDeliverForm("3", CREDIT_CARD);
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        assertTrue(driver.findElement(By.cssSelector(".alert-success")).isDisplayed());
+
+        // Volver a intentar entregar la misma compra -> mensaje de error
+        fillDeliverForm("3", CREDIT_CARD);
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        assertTrue(driver.findElement(By.cssSelector(".alert-danger")).isDisplayed());
+    }
+
+    private void fillDeliverForm(String purchaseId, String creditCardNumber) {
+        WebElement purchaseIdInput = driver.findElement(By.id("purchaseId"));
+        purchaseIdInput.clear();
+        purchaseIdInput.sendKeys(purchaseId);
+
+        WebElement creditCardInput = driver.findElement(By.id("creditCardNumber"));
+        creditCardInput.clear();
+        creditCardInput.sendKeys(creditCardNumber);
+    }
+
     private void login(String userName, String password) {
         driver.get("http://localhost:5173");
 
